@@ -1,10 +1,12 @@
 # monkeysee: design note
 
 monkeysee records short clips of app features for promotional sites. You
-(or a language model) describe a clip as a small YAML script; monkeysee
-opens the app's frontend in Chromium with themed demo content already in
-it, plays the script with a visible cursor and an on-screen keystroke
-display, and writes an mp4, webm or gif.
+describe a clip in plain words at the top of a YAML file (the feature, the
+state the app starts in, the beats); a language model writes the steps
+that play it under that; monkeysee opens the app's frontend in Chromium
+with themed demo content already in it, brings it to the starting state
+off camera, plays the steps with a visible cursor and an on-screen
+keystroke display, and writes an mp4, webm or gif.
 
 ## Why drive the web frontend
 
@@ -16,45 +18,51 @@ Chromium instead gives:
 - deterministic, headless runs that work in CI or a cloud machine;
 - exact control of window size and pixel ratio (2x by default, so clips
   are sharp on retina screens);
-- a place to draw the cursor, keystrokes and captions on top of the page.
+- a place to draw the cursor and keystrokes on top of the page.
 
 The cost is that anything the Rust side does (files, menus, native
-windows, the menu-bar icon) has to be faked or left out. Hush is the easy
-case: its frontend already falls back to `localStorage` when there is no
-Tauri bridge. For apps that need the bridge, `src/tauri-mock.mjs` installs
-a fake `window.__TAURI_INTERNALS__` whose `invoke` answers from handlers
-the adapter supplies.
+windows, the menu-bar icon) has to be faked or left out. `src/tauri-mock.mjs`
+installs a fake `window.__TAURI_INTERNALS__`; its `invoke` calls go to a
+backend object the adapter supplies, which runs in Node. For Hush that is
+`src/apps/hush-backend.mjs`, an in-memory file store answering the ~20
+commands the frontend uses (settings, the file tree, loading and saving
+files, creating notebooks), so desks, the sidebar, notebooks and panes all
+work. Hush's own `localStorage` fallback can't make notebooks, which is why
+it isn't used.
 
 ## Pieces
 
 ```
-demos/*.yaml          what to show (one clip per file)
-content/<pack>/       themed demo content (Moby-Dick, a whaling library)
+demos/<app>/*.yml     one clip per file: spec on top, script below
+content/<pack>/       themed demo content (Moby-Dick, the Pequod, a whaling library)
 src/apps/<app>.mjs    adapter: how to start, seed and describe an app
-src/overlay.js        cursor, keystroke HUD, captions, title cards (injected)
-src/runner.mjs        plays steps: cursor glides, human-paced typing, shortcuts
+src/apps/hush-backend.mjs  in-memory stand-in for Hush's Rust commands
+src/overlay.js        cursor and keystroke HUD (injected)
+src/runner.mjs        plays steps: cursor glides, drags, human-paced typing, shortcuts
 src/recorder.mjs      Chrome screencast frames -> ffmpeg
-src/planner.mjs       plain-language request -> script, via the Claude API
+src/planner.mjs       spec -> script, via the Claude API
 src/cli.mjs           record | check | inspect | plan | fetch-content
 ```
 
 **Adapters** hold everything app-specific: the dev-server command and URL,
-a `seed` function that turns content items into the app's own storage
-before the app boots, a `ready` check, optional Tauri IPC handlers, and a
-`guide` (selectors and shortcuts) that is written for a model to read.
+a `ready` check, a Tauri backend (or a `seed` function for apps that keep
+data in the browser), and a `guide` (selectors, shortcuts, how to reach
+common states) that is written for a model to read.
 Adding Zotero Helper or Snorkle means writing one of these.
 
 **Content packs** are folders with a `pack.yaml` and the files it lists:
 Markdown for prose, JSON for structured data (the `library` pack is
-CSL-JSON for Zotero demos). A pack item can carry a `fetch` recipe for the
+CSL-JSON for Zotero demos; the `pequod` pack has ten Hush files, including
+a notebook with a crew flowchart and two notes). A pack item can carry a `fetch` recipe for the
 full text; `monkeysee fetch-content` downloads it locally. Scripts refer to
 items as `pack/item`, either to seed the app or as text to type
 (`{content: moby-dick/chapter-1, paragraph: 2, words: 20}`).
 
 **Keystrokes are visible** because every `press` step goes through the
 overlay first: the HUD shows the keys in macOS order and symbols
-(⌃⌥⇧⌘), with an optional label naming the feature, and only then is the
-key pressed. The page is told it is on macOS (platform and user agent), so
+(⌃⌥⇧⌘), and only then is the key pressed. Keys held through a drag
+show the same way. Setup steps run before recording, so their keys
+never show. The page is told it is on macOS (platform and user agent), so
 apps show ⌘ and their `Mod-` shortcuts bind to Meta. The overlay lives in
 a closed shadow root with pointer events off, so it never catches clicks.
 
@@ -70,31 +78,38 @@ the only diff in the video.
 
 ## How a model writes clips
 
-Two routes, both ending in a script file you can read and edit:
+The person writes the spec half of the file. The model writes `content`
+and `setup` (to reach the stated state) and `steps` (one group per beat)
+under it, and both routes end with the script in the same file, where it
+can be read and edited:
 
-1. **In Claude Code (no API key).** Ask for a clip in this repo. Claude
-   runs `monkeysee inspect --app hush` to get a screenshot, the
+1. **In Claude Code (no API key).** Ask for the spec to be scripted.
+   Claude runs `monkeysee inspect --app hush` to get a screenshot, the
    accessibility tree and a list of clickable elements with selectors,
-   writes `demos/<name>.yaml`, runs `monkeysee check` (all steps fast, no
-   video) until it passes, then `monkeysee record`. CLAUDE.md tells it
-   how.
-2. **`monkeysee plan "<what to show>" --app hush`.** The same loop through
-   the Claude API: the model gets the script format, the adapter's guide,
-   the content packs, and a screenshot and element list of the app as it
-   starts; it answers with YAML, which is validated and dry-run against
+   writes the script, runs `monkeysee check` (setup and steps fast, no
+   video) until it passes, then `monkeysee record` and looks at frames.
+   CLAUDE.md tells it how.
+2. **`monkeysee plan demos/hush/panes.yml`.** The same loop through the
+   Claude API: the model gets the file format, the adapter's guide, the
+   content packs, a screenshot and element list of the app at launch, and
+   the spec; it answers with YAML, which is validated and dry-run against
    the real app; failures (with a screenshot of the moment) go back to it
-   for up to two fixes. Needs `ANTHROPIC_API_KEY`.
+   for up to two fixes. The result is written under the spec. Needs
+   `ANTHROPIC_API_KEY`.
 
 The dry run matters: a model's first guess at a selector is often wrong,
 and `check` turns that into an error message in seconds instead of a
-broken minute-long render.
+broken minute-long render. It doesn't catch a step that runs but shows the
+wrong thing (a pane showing an empty part of its canvas), so the frames
+still need a look.
 
 ## What's there and what isn't
 
-Working: the Hush adapter, a fixture app for testing without any of your
-repos, the overlay, recording to mp4/webm/gif at 2x, the `check` and
-`inspect` commands, Moby-Dick and whaling-library packs, the sample clip
-`demos/hush-moby-dick.yaml`.
+Working: the Hush adapter with the full app (notebooks, panes) on a fake
+backend, a fixture app for testing without any of your repos, the overlay,
+recording to mp4/webm/gif at 2x, the `check` and `inspect` commands, the
+Moby-Dick, Pequod and whaling-library packs, and the clips
+`demos/hush/panes.yml` and `demos/hush/focus.yml`.
 
 Not yet tried: the `plan` command against the API (written to the current
 SDK, never run here); adapters for Zotero Helper and Snorkle.

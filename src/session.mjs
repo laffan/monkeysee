@@ -1,11 +1,13 @@
 // Shared plumbing for the CLI commands: resolve content, start the app,
 // open it in a browser, and tidy up afterwards.
 import { getApp } from "./apps/index.mjs";
-import { loadItem } from "./content.mjs";
+import { loadItem, packRefs } from "./content.mjs";
 import { launch, openApp, ensureServer, stopServer } from "./browser.mjs";
 
 export function resolveContent(script, app) {
-  const refs = script.content.length ? script.content : (app.defaultContent || []).map((ref) => ({ ref }));
+  const given = script.content.length ? script.content : (app.defaultContent || []).map((ref) => ({ ref }));
+  // "pack/*" stands for every item in the pack.
+  const refs = given.flatMap((c) => (c.ref.endsWith("/*") ? packRefs(c.ref.slice(0, -2)).map((ref) => ({ ref })) : [c]));
   return refs.map(({ ref, title }) => {
     const item = loadItem(ref);
     return { ...item, title: title || item.title };

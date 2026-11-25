@@ -1,5 +1,7 @@
-// Turns a plain-language request ("show focus mode in hush with Moby Dick")
-// into a demo script, using Claude through the Anthropic API.
+// Scripts a spec file: reads the person-written half of demos/<app>/<x>.yml
+// (feature, state, description), asks Claude for the content, setup and
+// steps that play it, checks them against the real app, and writes them
+// back into the same file under the spec.
 //
 // The model gets: the script format (docs/SCRIPT.md), the app adapter's
 // guide (selectors and shortcuts), the content packs, and what the app
@@ -14,7 +16,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import YAML from "yaml";
 import { getApp } from "./apps/index.mjs";
 import { listPacks } from "./content.mjs";
-import { normalize, ScriptError } from "./script.mjs";
+import { normalize, specOf, ScriptError } from "./script.mjs";
 import { withApp, describePage } from "./session.mjs";
 import { runSteps } from "./runner.mjs";
 
@@ -22,30 +24,42 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const MODEL = process.env.MONKEYSEE_MODEL || "claude-opus-5-5";
 const MAX_REPAIRS = 2;
 
-const SYSTEM = `You write demo scripts for monkeysee, a tool that records short promotional
-videos of app features. A script is YAML that drives a real browser running the app:
-a visible cursor glides and clicks, text is typed at a human pace, and every shortcut
-appears on screen in a keystroke HUD with an optional label.
+const SYSTEM = `You script demo videos for monkeysee, a tool that records short promotional
+clips of app features. You get a spec a person wrote (feature, the app's starting state,
+and the beats of the clip in order) and write the part that plays it: YAML that drives a
+real browser running the app. A visible cursor glides and clicks, text is typed at a human
+pace, and every shortcut appears on screen in a keystroke HUD. There are no captions or
+labels: the clip shows the app, the cursor and the keys, nothing else.
 
-Write for a viewer who has never seen the app: one feature per clip, 8 to 25 seconds,
-a clear before and after, short captions in plain words (or none), and labels on
-shortcuts that name the feature ("Focus Mode"). Let effects breathe with waits of
-800 to 2000 ms after something changes. Prefer showing a feature through its keyboard
-shortcut when it has one. Use the themed content packs for anything typed or shown.
+Reply with a YAML mapping with these keys and no others:
+- content: the content pack items the app is seeded with, chosen to match the spec's state
+- setup: steps that bring the app to the spec's state; they run fast before recording
+- steps: the recorded beats, one group per line of the description, in order; put the
+  beat's words in the note of its first step
+- typing (optional): e.g. {wpm: 110} to keep the clip short
+
+Aim for 8 to 30 seconds. Let effects breathe with waits of 800 to 2000 ms after
+something changes. Prefer a feature's keyboard shortcut when it has one, so it shows in
+the HUD. Use the themed content packs for anything typed or shown.
 
 Only use selectors you can see in the page description or the app guide. Do not use
-eval steps. Reply with the complete script in one \`\`\`yaml block and nothing after it.`;
+eval steps. Reply with the YAML in one \`\`\`yaml block and nothing after it.`;
 
-export async function plan({ request, appName, contentRefs = [], check = true, appDir, log = console.error }) {
-  const app = getApp(appName);
+/**
+ * spec: the normalized file (loadScript(file, {spec: true})).
+ * Returns {yaml, script}: yaml is the generated half only.
+ */
+export async function plan({ spec, check = true, appDir, log = console.error }) {
+  const app = getApp(spec.app);
   const formatDoc = fs.readFileSync(path.resolve(here, "..", "docs", "SCRIPT.md"), "utf8");
   const packs = listPacks().map((p) => ({
     pack: p.name,
     title: p.title,
-    items: Object.entries(p.items || {}).map(([k, v]) => `${p.name}/${k} (${v.title || k})`),
+    items: Object.entries(p.items || {}).map(([k, v]) => `${p.name}/${k} (${v.title || k}${v.kind && v.kind !== "document" ? `, ${v.kind}` : ""})`),
   }));
+  const startContent = spec.content.length ? spec.content.map((c) => c.ref) : app.defaultContent || [];
 
-  const probe = normalize({ app: appName, content: contentRefs, viewport: { width: 1280, height: 800 }, scale: 1, steps: [{ wait: 0 }] });
+  const probe = normalize({ app: spec.app, content: startContent, viewport: spec.viewport, scale: 1, steps: [{ wait: 0 }] });
   log(`Opening ${app.title} to see what's on screen…`);
   const start = await withApp(probe, { appDir }, async ({ page }) => ({
     shot: (await page.screenshot({ type: "jpeg", quality: 80 })).toString("base64"),
@@ -58,11 +72,11 @@ export async function plan({ request, appName, contentRefs = [], check = true, a
     content: [
       { type: "text", text: `# Script format\n\n${formatDoc}` },
       { type: "text", text: `# App: ${app.title} (app: ${app.name})\n${app.guide}` },
-      { type: "text", text: `# Content packs\n${YAML.stringify(packs)}\nContent seeded at start: ${JSON.stringify(contentRefs.length ? contentRefs : app.defaultContent || [])}` },
-      { type: "text", text: "# The app as it looks at the start of the clip (1280x800):" },
+      { type: "text", text: `# Content packs\n${YAML.stringify(packs)}` },
+      { type: "text", text: `# The app at launch, seeded with ${JSON.stringify(startContent)} (${spec.viewport.width}x${spec.viewport.height}), before any setup:` },
       { type: "image", source: { type: "base64", media_type: "image/jpeg", data: start.shot } },
       { type: "text", text: `Accessibility snapshot:\n${start.aria}\n\nVisible interactive elements:\n${YAML.stringify(start.elements)}` },
-      { type: "text", text: `# Request\n${request}` },
+      { type: "text", text: `# The spec\n\`\`\`yaml\n${YAML.stringify(specOf(spec))}\`\`\`` },
     ],
   }];
 
@@ -78,7 +92,10 @@ export async function plan({ request, appName, contentRefs = [], check = true, a
     if (!yaml) problem = "I couldn't find a ```yaml block in your reply.";
     else {
       try {
-        script = normalize({ ...YAML.parse(yaml), app: appName });
+        const generated = YAML.parse(yaml) || {};
+        const extra = Object.keys(generated).filter((k) => !["content", "setup", "steps", "typing"].includes(k));
+        if (extra.length) throw new ScriptError([`Only content, setup, steps and typing belong in the reply; remove ${extra.join(", ")}`]);
+        script = normalize({ ...specOf(spec), app: spec.app, ...generated }, { file: spec.file });
       } catch (err) {
         problem = err instanceof ScriptError ? err.message : `The YAML doesn't parse: ${err.message}`;
       }
@@ -90,7 +107,7 @@ export async function plan({ request, appName, contentRefs = [], check = true, a
     if (!problem) return { yaml: yaml.trim() + "\n", script };
     if (attempt >= MAX_REPAIRS) throw new Error(`The planned script still fails after ${MAX_REPAIRS} fixes:\n${problem.text || problem}`);
     log(`Problem: ${(problem.text || problem).split("\n")[0]}`);
-    const feedback = [{ type: "text", text: `That script has a problem. Fix it and reply with the whole script again.\n\n${problem.text || problem}` }];
+    const feedback = [{ type: "text", text: `That script has a problem. Fix it and reply with the whole YAML again.\n\n${problem.text || problem}` }];
     if (problem.shot) feedback.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data: problem.shot } });
     messages.push({ role: "user", content: feedback });
   }
@@ -122,6 +139,7 @@ async function dryRun(script, appDir) {
   const fast = { ...script, scale: 1 };
   return withApp(fast, { appDir }, async ({ page }) => {
     try {
+      await runSteps(page, fast, { fast: true, steps: fast.setup });
       await runSteps(page, fast, { fast: true });
       return null;
     } catch (err) {

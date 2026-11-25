@@ -27,7 +27,12 @@ export function readPack(name) {
   return { ...YAML.parse(fs.readFileSync(file, "utf8")), dir };
 }
 
-/** Resolves "pack/item" (or {pack, item}) to {title, text, data}. */
+/** Every item of a pack, in pack.yaml order, as "pack/item" refs. */
+export function packRefs(name) {
+  return Object.keys(readPack(name).items || {}).map((item) => `${name}/${item}`);
+}
+
+/** Resolves "pack/item" (or {pack, item}) to {title, kind, text, data}. */
 export function loadItem(ref) {
   const { pack: packName, item: itemName } = typeof ref === "string" ? splitRef(ref) : ref;
   const pack = readPack(packName);
@@ -43,7 +48,7 @@ export function loadItem(ref) {
     if (src.endsWith(".json")) data = JSON.parse(raw);
     else text = raw;
   }
-  return { pack: packName, item: itemName, title: item.title || itemName, text, data };
+  return { pack: packName, item: itemName, title: item.title || itemName, kind: item.kind || "document", text, data };
 }
 
 function splitRef(ref) {

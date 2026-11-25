@@ -1,0 +1,22 @@
+# The built-in notepad, for trying monkeysee without any app checked out.
+feature: smoke
+state: chapter 1 of Moby-Dick in the notepad
+description:
+  - type a line at the end
+  - show the word count
+  - turn on focus mode from the command palette
+scale: 1
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [moby-dick/chapter-1]
+setup:
+  - click: "#editor"
+  - press: { keys: Control+End, silent: true }
+steps:
+  - type: "\n\nThe whale, of course, is late."
+  - press: Meta+Shift+W
+  - wait: 700
+  - press: Meta+K
+  - type: focus
+  - press: Enter
+  - wait: 1500

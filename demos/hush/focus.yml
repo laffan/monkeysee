@@ -1,0 +1,40 @@
+feature: focus
+state: the first chapter of Moby-Dick open, sidebar closed
+description:
+  - type a sentence at the end of the chapter
+  - turn Focus Mode on and off
+  - show the word count
+  - enter Zen Focus from the command palette, then leave it
+output: [out/hush-focus.mp4, out/hush-focus.gif]
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [moby-dick/chapter-1]
+typing: { wpm: 95 }
+setup:
+  - press: { keys: Meta+Backslash, silent: true }
+  - click: "text=Loomings"
+  - press: { keys: Meta+Backslash, silent: true }
+  - waitFor: ".cm-line:has-text(\"Circumambulate\")"
+  - click: ".cm-line:has-text(\"Circumambulate\")"
+  - press: { keys: Meta+End, silent: true }
+steps:
+  - type: "\n\nWhenever it is a damp, drizzly November in my soul, I write."
+    note: type a sentence at the end of the chapter
+  - wait: 700
+  - press: Meta+S
+    note: Focus Mode on and off
+  - wait: 2200
+  - press: Meta+S
+  - wait: 500
+  - press: Meta+Shift+W
+    note: word count
+  - wait: 1600
+  - press: Meta+P
+    note: Zen Focus from the command palette
+  - wait: 400
+  - type: zen
+  - wait: 500
+  - press: Enter
+  - wait: 2800
+  - press: Meta+Shift+S
+  - wait: 800

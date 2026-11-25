@@ -1,55 +1,76 @@
-# Demo script format
+# Demo file format
 
-A demo script is a YAML file that describes one clip. monkeysee opens the
-app in Chromium with the script's content seeded, starts recording, plays
-the steps, and writes the video.
+One YAML file per clip, in `demos/<app>/<feature>.yml`. The top half is a
+spec a person writes: what the clip is about, the state the app starts in,
+and the beats in order. The bottom half is the script that plays it, written
+from the spec by a model (`monkeysee plan`, or Claude Code following
+CLAUDE.md) and editable by hand.
 
 ```yaml
-app: hush                      # an adapter in src/apps/ (hush, fixture)
-title: Focus Mode in Hush      # for your own reference
-output: out/hush-focus.mp4     # .mp4, .webm or .gif; a list renders several
-content:                       # seeded into the app before recording
-  - moby-dick/chapter-1        # "pack/item" from content/
-viewport: { width: 1280, height: 800 }   # CSS pixels (default 1280x800)
-scale: 2                       # device pixel ratio; 2 gives a 2560x1600 video
-typing: { wpm: 80 }            # typing speed for type steps
-overlay: { hudTheme: dark }    # keystroke HUD: dark or light; cursor: false hides the cursor
-steps:
-  - caption: Hush keeps you in the sentence you're writing
-  - click: .cm-content
-  - press: { keys: Meta+End, label: End of document }
-  - type: " A new sentence, typed at a human pace."
-  - wait: 600
-  - press: { keys: Meta+S, label: Focus Mode }
-  - wait: 2000
-  - caption: null
+feature: panes                 # what the clip is about; names the output file
+state: left sidebar open, ten demo text and notebook files
+description:                   # the beats, in order
+  - working on text document
+  - open notebook with flowchart and notes as a pane
+  - dock pane to right
+  - drag a note from notebook into document
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [pequod/*]            # what the app is seeded with
+setup:                         # brings the app to `state`; runs fast, not recorded
+  - press: Meta+Backslash
+  - click: "text=The Crew as a Machine"
+steps:                         # recorded, one group per beat
+  - type: " He is also the only one left to tell it."
+    note: working on text document
+  - press: Meta+Shift+O
+    note: open notebook as a pane
+  ...
 ```
 
-Optional top-level keys: `platform` (`mac`, the default, makes the page
-report macOS so apps show ⌘ and `Meta` shortcuts work; `linux` turns that
-off), `colorScheme` (`light` or `dark`), `fps` (30), `lead` and `tail`
-(milliseconds held before the first and after the last step),
-`appOptions` (passed to the adapter, e.g. `settings` for Hush).
+A file with only the top half is a spec waiting to be scripted: `record`
+and `check` refuse it and say so.
+
+**Spec keys.** `feature` (defaults to the file name), `state`,
+`description` (a list of beats), and `app`, which can be left out when the
+file sits in `demos/<app>/`.
+
+**Script keys.** `content` (pack items to seed; `pack/*` seeds a whole
+pack), `setup` and `steps` (lists of steps, below), and optionally:
+`output` (default `out/<app>-<feature>.mp4`; `.mp4`, `.webm` or `.gif`, or
+a list to render several), `viewport` (CSS pixels, default
+`{width: 1280, height: 800}`), `scale` (device pixel ratio, default 2, so
+2560x1600 video), `typing` (`{wpm: 80}` by default), `overlay`
+(`{hudTheme: dark | light, cursor: true | false}`), `platform` (`mac`, the
+default, makes the page report macOS so apps show ⌘ and `Meta` shortcuts
+work; `linux` turns that off), `colorScheme` (`light` or `dark`), `fps`
+(30), `lead` and `tail` (milliseconds held before the first and after the
+last step), `appOptions` (passed to the adapter, e.g. `settings` for Hush).
+
+The clip shows only the app, the cursor and the keystroke HUD. There are no
+captions, title cards or labels.
 
 ## Steps
 
 Each step is a mapping with exactly one action. Any step may also carry a
-`note:` for humans; it is printed while recording and otherwise ignored.
+`note:`; it is printed while recording and otherwise ignored. Planned
+scripts put the beat's words in the note of its first step.
 
 | Step | Short form | Long form | What it does |
 |---|---|---|---|
-| `card` | `card: Hush` | `{title, subtitle, duration: 2200, background: "#101014"}` | Full-screen title card that fades in, holds, fades out |
-| `caption` | `caption: Text` or `caption: null` | `{text, position: bottom \| top, duration}` | Shows a caption until the next caption (or for `duration` ms) |
 | `wait` | `wait: 800` | | Pause, in milliseconds |
-| `click` | `click: <selector>` | `{selector, double: true, label}` | Cursor glides to the element and clicks it |
+| `click` | `click: <selector>` | `{selector, double: true}` | Cursor glides to the element and clicks it |
 | `move` | `move: <selector>` | | Cursor glides to the element |
+| `drag` | | `{from, to, keys, duration: 900}` | Presses on `from`, glides to `to`, releases; each is a selector or `[x, y]`. `keys` (e.g. `Meta`) are held through the drop and shown in the HUD |
 | `type` | `type: "text"` | `{text \| content, paragraph, words, into, wpm}` | Types at a human pace (rhythm is the same on every render) |
 | `paste` | `paste: "text"` | `{text \| content, paragraph, words, into}` | Inserts text at once; the HUD shows ⌘V |
-| `press` | `press: Meta+S` | `{keys, label, times, hold, silent}` | Shows the keys in the HUD, then presses them; `silent: true` presses without showing (for setup) |
-| `highlight` | `highlight: <selector>` | `{selector, duration: 1600}` | Draws a ring around an element and dims the rest |
-| `scroll` | `scroll: 400` | `{by, selector, duration: 900}` | Smooth scroll of the page or an element |
+| `press` | `press: Meta+S` | `{keys, times, hold, silent}` | Shows the keys in the HUD, then presses them; `silent: true` presses without showing |
+| `scroll` | `scroll: 400` | `{by: px or [dx, dy], at, selector, duration: 900}` | Smooth mouse-wheel scroll with the cursor over `at` (or where it is); `selector` sets that element's scrollTop instead |
 | `waitFor` | `waitFor: <selector>` | `{selector, state, timeout}` | Waits for an element without showing anything |
 | `eval` | `eval: "js"` | | Runs JavaScript in the page; hand-written scripts only |
+
+Setup steps run at full speed before recording starts, so nothing they do
+is seen; keys pressed there don't show.
 
 **Selectors** are Playwright selectors: CSS (`.cm-content`,
 `input[placeholder='Type a command…']`), text (`text=Focus mode`), or CSS

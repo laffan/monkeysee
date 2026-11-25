@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // monkeysee: record short feature demos of web and Tauri app frontends.
 //
-//   monkeysee record <script.yaml> [--app-dir DIR] [--headed]
-//   monkeysee check  <script.yaml>           run every step fast, no video
-//   monkeysee inspect --app hush [--content moby-dick/chapter-1]
-//   monkeysee plan "<what to show>" --app hush [-o demos/x.yaml] [--record] [--no-check]
+//   monkeysee record <demos/app/x.yml> [--app-dir DIR] [--headed]
+//   monkeysee check  <demos/app/x.yml>       run setup and steps fast, no video
+//   monkeysee plan   <demos/app/x.yml> [--record] [--no-check]
+//                                            script a spec with the Claude API
+//   monkeysee inspect --app hush [--content pequod/*]
 //   monkeysee fetch-content                  download full public-domain texts
 //   monkeysee apps | packs
 import fs from "node:fs";
@@ -46,9 +47,11 @@ const commands = {
     if (!file) usage("check needs a script file");
     const script = { ...loadScript(file), scale: 1 };
     await withApp(script, { appDir, headless: !opt.headed }, async ({ page }) => {
-      await runSteps(page, script, { fast: true, onStep: (s) => log(`  ${s.index + 1}. ${s.op}`) });
+      const onStep = (s) => log(`  ${s.list} ${s.index + 1}. ${s.op}`);
+      await runSteps(page, script, { fast: true, steps: script.setup, onStep });
+      await runSteps(page, script, { fast: true, onStep });
     });
-    log(`OK: all ${script.steps.length} steps ran.`);
+    log(`OK: ${script.setup.length} setup and ${script.steps.length} recorded steps ran.`);
   },
 
   async inspect() {
@@ -63,17 +66,15 @@ const commands = {
     });
   },
 
-  async plan(...words) {
-    const request = words.join(" ");
-    if (!request || !opt.app) usage('plan needs a request and --app, e.g. plan "show focus mode" --app hush');
+  async plan(file) {
+    if (!file) usage("plan needs a spec file, e.g. plan demos/hush/panes.yml");
+    const spec = loadScript(file, { spec: true });
+    if (!spec.description.length) usage(`${file} has no description: list the clip's beats under description:`);
     const { plan } = await import("./planner.mjs");
-    const { yaml, script } = await plan({ request, appName: opt.app, contentRefs: opt.content || [], check: !opt["no-check"], appDir, log });
-    const file = opt.output || `demos/${slug(request)}.yaml`;
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, `# Planned by monkeysee from: ${request}\n${yaml}`);
-    log(`Wrote ${file}`);
+    const { yaml } = await plan({ spec, check: !opt["no-check"], appDir, log });
+    fs.writeFileSync(file, `${specPart(fs.readFileSync(file, "utf8"))}\n${SCRIPT_MARK}\n${yaml}`);
+    log(`Wrote the script into ${file}`);
     if (opt.record) console.log((await record(loadScript(file))).join("\n"));
-    else void script;
   },
 
   async "fetch-content"() { await fetchAll(); },
@@ -81,10 +82,27 @@ const commands = {
   async packs() { for (const p of listPacks()) console.log(`${p.name}\t${Object.keys(p.items || {}).join(", ")}\t${p.title}`); },
 };
 
+const SCRIPT_MARK = "# Script (written from the spec above; edit freely) ------------------------";
+
+// The person-written top of a file: everything before the script marker,
+// or, in a file without one, before the first content/setup/steps key.
+function specPart(text) {
+  const i = text.indexOf(SCRIPT_MARK);
+  if (i >= 0) return text.slice(0, i).trimEnd() + "\n";
+  const m = text.match(/^(content|setup|steps|typing):/m);
+  return (m ? text.slice(0, m.index) : text).trimEnd() + "\n";
+}
+
 async function record(script) {
   const t0 = Date.now();
   log(`Recording ${script.file || script.app} (${script.steps.length} steps)…`);
   return withApp(script, { appDir, headless: !opt.headed }, async ({ page }) => {
+    if (script.setup.length) {
+      log("  setup…");
+      await runSteps(page, script, { fast: true, steps: script.setup });
+      await page.mouse.move(script.viewport.width * 0.62, script.viewport.height * 0.7);
+      await page.waitForTimeout(600);
+    }
     const rec = await startRecording(page, {
       output: script.outputs[0], fps: script.fps,
       width: script.viewport.width, height: script.viewport.height, scale: script.scale,
@@ -106,10 +124,9 @@ async function record(script) {
 }
 
 function log(...a) { console.error(...a); }
-function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "demo"; }
 function usage(msg) {
   if (msg) console.error(msg + "\n");
-  console.error(fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 9).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.error(fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 10).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
   process.exit(msg ? 1 : 0);
 }
 

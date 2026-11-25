@@ -8,6 +8,11 @@
 // they must be self-contained (no closures over Node variables); pass data
 // through `tauri.data`, available to handlers as `data`.
 //
+// For a stateful fake backend, an adapter can instead give
+// `tauri.backend(content, options)`, which runs in Node and returns
+// {command: (args) => result}. Commands the page doesn't handle itself are
+// forwarded to it through window.__monkeyseeInvoke (see browser.mjs).
+//
 // Unknown commands resolve to null and are logged once, which is usually
 // what a "nothing on disk yet" state looks like to the frontend.
 
@@ -41,6 +46,7 @@ export function tauriMockScript({ handlers = {}, data = {}, label = "main", plat
       invoke: async (cmd, args = {}) => {
         const h = handlers[cmd] || builtins[cmd];
         if (h) return h(args, data);
+        if (window.__monkeyseeInvoke) return window.__monkeyseeInvoke(cmd, args);
         if (!warned.has(cmd)) { warned.add(cmd); console.debug("[monkeysee tauri mock] unhandled", cmd, args); }
         return null;
       },

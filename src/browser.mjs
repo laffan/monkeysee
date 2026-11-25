@@ -36,7 +36,19 @@ export async function openApp(browser, app, script, { content = [] } = {}) {
   });
   // Order matters: platform spoof and Tauri mock before any app code runs.
   if (mac) await context.addInitScript(() => Object.defineProperty(navigator, "platform", { get: () => "MacIntel" }));
-  if (app.tauri) await context.addInitScript({ content: tauriMockScript(app.tauri) });
+  if (app.tauri) {
+    await context.addInitScript({ content: tauriMockScript(app.tauri) });
+    if (app.tauri.backend) {
+      const backend = app.tauri.backend(content, script.appOptions || {});
+      const unhandled = new Set();
+      await context.exposeFunction("__monkeyseeInvoke", async (cmd, args) => {
+        const fn = backend[cmd];
+        if (fn) return fn(args || {});
+        if (process.env.MONKEYSEE_DEBUG && !unhandled.has(cmd)) { unhandled.add(cmd); console.warn("[tauri backend] unhandled", cmd); }
+        return null;
+      });
+    }
+  }
   if (app.seed) {
     const seed = app.seed(content, script.appOptions || {});
     if (seed) await context.addInitScript(seed.fn, seed.arg);

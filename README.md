@@ -1,19 +1,29 @@
 # monkeysee
 
-Short, scripted feature clips of web and Tauri app frontends, with visible
-keyboard shortcuts and themed demo content. Write a small YAML script (or
-ask a model to), and monkeysee records it to mp4, webm or gif.
+Short feature clips of web and Tauri app frontends, with visible keyboard
+shortcuts and themed demo content. Describe a clip in a small YAML file,
+have a model script it, and monkeysee records it to mp4, webm or gif.
 
 ```yaml
-app: hush
-output: [out/hush-moby-dick.mp4, out/hush-moby-dick.gif]
-content: [moby-dick/chapter-1]
-steps:
-  - card: { title: Hush, subtitle: A quiet place to write }
-  - type: "\n\nWhenever it is a damp, drizzly November in my soul, I write."
-  - press: { keys: Meta+S, label: Focus Mode }
-  - wait: 2200
+# demos/hush/panes.yml
+feature: panes
+state: left sidebar open, ten demo text and notebook files
+description:
+  - working on text document
+  - open notebook with flowchart and notes as a pane
+  - dock pane to right
+  - drag a note from notebook into document
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [pequod/*]
+setup: [...]
+steps: [...]
 ```
+
+The top half is yours: what the clip shows, in plain words. The bottom half
+is written from it by a model (`monkeysee plan`, or Claude Code with
+CLAUDE.md) and checked against the running app. Clips show the app, the
+cursor and the keys pressed; nothing else is drawn on top.
 
 ## Setup
 
@@ -31,11 +41,11 @@ running at the adapter's URL, it is reused.
 ## Commands
 
 ```sh
-monkeysee record demos/hush-moby-dick.yaml   # render the clip
-monkeysee check  demos/hush-moby-dick.yaml   # run every step fast, no video
-monkeysee inspect --app hush                 # screenshot + selectors of the starting screen
-monkeysee plan "show Zen Focus" --app hush --record   # needs ANTHROPIC_API_KEY
-monkeysee fetch-content                      # full public-domain texts for the packs
+monkeysee plan   demos/hush/panes.yml       # script a spec (needs ANTHROPIC_API_KEY)
+monkeysee check  demos/hush/panes.yml       # run setup and steps fast, no video
+monkeysee record demos/hush/panes.yml       # render the clip to out/hush-panes.mp4
+monkeysee inspect --app hush                # screenshot + selectors of the starting screen
+monkeysee fetch-content                     # full public-domain texts for the packs
 monkeysee apps | packs
 ```
 
@@ -43,6 +53,6 @@ monkeysee apps | packs
 
 ## Docs
 
-- [docs/SCRIPT.md](docs/SCRIPT.md): the script format
+- [docs/SCRIPT.md](docs/SCRIPT.md): the file format
 - [docs/DESIGN.md](docs/DESIGN.md): how it works, limits, open questions
 - [CLAUDE.md](CLAUDE.md): how a model should write and check clips here
