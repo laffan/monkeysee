@@ -1,0 +1,18 @@
+name: moby-dick
+title: "Moby-Dick; or, The Whale (Herman Melville, 1851)"
+license: Public domain
+source: https://www.gutenberg.org/ebooks/2701
+items:
+  chapter-1:
+    title: Loomings
+    file: chapter-1.md
+    # The repo ships the opening paragraphs. `npm run content:fetch` pulls
+    # the whole chapter from Project Gutenberg into chapter-1.full.md,
+    # which is used instead when it exists.
+    fetch:
+      url: https://www.gutenberg.org/cache/epub/2701/pg2701.txt
+      start: "CHAPTER 1. Loomings."
+      end: "CHAPTER 2. The Carpet-Bag."
+  opening-line:
+    title: Call me Ishmael
+    text: "Call me Ishmael."

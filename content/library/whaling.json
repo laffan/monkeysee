@@ -1,0 +1,10 @@
+[
+  { "id": "melville1851", "type": "book", "title": "Moby-Dick; or, The Whale", "author": [{ "family": "Melville", "given": "Herman" }], "issued": { "date-parts": [[1851]] }, "publisher": "Harper & Brothers", "publisher-place": "New York" },
+  { "id": "beale1839", "type": "book", "title": "The Natural History of the Sperm Whale", "author": [{ "family": "Beale", "given": "Thomas" }], "issued": { "date-parts": [[1839]] }, "publisher": "John Van Voorst", "publisher-place": "London" },
+  { "id": "chase1821", "type": "book", "title": "Narrative of the Most Extraordinary and Distressing Shipwreck of the Whale-Ship Essex", "author": [{ "family": "Chase", "given": "Owen" }], "issued": { "date-parts": [[1821]] }, "publisher": "W. B. Gilley", "publisher-place": "New York" },
+  { "id": "scoresby1820", "type": "book", "title": "An Account of the Arctic Regions, with a History and Description of the Northern Whale-Fishery", "author": [{ "family": "Scoresby", "given": "William" }], "issued": { "date-parts": [[1820]] }, "publisher": "Archibald Constable", "publisher-place": "Edinburgh" },
+  { "id": "darwin1859", "type": "book", "title": "On the Origin of Species by Means of Natural Selection", "author": [{ "family": "Darwin", "given": "Charles" }], "issued": { "date-parts": [[1859]] }, "publisher": "John Murray", "publisher-place": "London" },
+  { "id": "thoreau1854", "type": "book", "title": "Walden; or, Life in the Woods", "author": [{ "family": "Thoreau", "given": "Henry David" }], "issued": { "date-parts": [[1854]] }, "publisher": "Ticknor and Fields", "publisher-place": "Boston" },
+  { "id": "shelley1818", "type": "book", "title": "Frankenstein; or, The Modern Prometheus", "author": [{ "family": "Shelley", "given": "Mary" }], "issued": { "date-parts": [[1818]] }, "publisher": "Lackington, Hughes, Harding, Mavor & Jones", "publisher-place": "London" },
+  { "id": "douglass1845", "type": "book", "title": "Narrative of the Life of Frederick Douglass, an American Slave", "author": [{ "family": "Douglass", "given": "Frederick" }], "issued": { "date-parts": [[1845]] }, "publisher": "Anti-Slavery Office", "publisher-place": "Boston" }
+]

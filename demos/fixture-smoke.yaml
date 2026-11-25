@@ -1,0 +1,18 @@
+# A short clip of the built-in notepad, for trying monkeysee without any app checked out.
+app: fixture
+output: out/fixture-smoke.mp4
+content:
+  - moby-dick/chapter-1
+scale: 1
+steps:
+  - card: { title: Notepad, subtitle: a monkeysee smoke test, duration: 1200 }
+  - click: "#editor"
+  - press: { keys: Control+End, silent: true }
+  - type: "\n\nThe whale, of course, is late."
+  - press: { keys: Meta+Shift+W, label: Word count }
+  - wait: 700
+  - press: { keys: Meta+K, label: Command palette }
+  - type: focus
+  - press: Enter
+  - caption: Focus mode fades everything but the page
+  - wait: 1500

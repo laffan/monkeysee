@@ -1,0 +1,7 @@
+name: library
+title: "A whaling reading list (public-domain works, as CSL-JSON)"
+license: Bibliographic facts; all works are in the public domain
+items:
+  whaling:
+    title: Whaling shelf
+    file: whaling.json

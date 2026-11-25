@@ -1,0 +1,25 @@
+{
+  "name": "monkeysee",
+  "version": "0.1.0",
+  "description": "Record short, scripted feature demos of web and Tauri apps, with visible keyboard shortcuts and themed sample content.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "monkeysee": "src/cli.mjs"
+  },
+  "scripts": {
+    "record": "node src/cli.mjs record",
+    "plan": "node src/cli.mjs plan",
+    "inspect": "node src/cli.mjs inspect",
+    "check": "node src/cli.mjs check",
+    "content:fetch": "node src/cli.mjs fetch-content"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.14.0",
+    "playwright": "1.49.1",
+    "yaml": "2.6.1"
+  }
+}
