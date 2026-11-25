@@ -29,6 +29,8 @@ steps:
   - click: "#later-section .later-card:has-text(\"lighthouse logbooks\") button[aria-label^=\"Add\"]"
     note: add pages
   - wait: 1000
+  - scroll: {at: "page: .series", by: [0, 400], duration: 500}
+  - wait: 400
   - click: "page: .series a:has-text(\"storms\")"
   - wait: 500
   - click: "page: .series a:has-text(\"families\")"

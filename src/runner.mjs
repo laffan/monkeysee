@@ -140,6 +140,13 @@ class Ctx {
           await this.wait(220);
         }
         for (const m of mods) await page.keyboard.down(m);
+        if (mods.length) {
+          // A small move with the keys held, for pages that react to a
+          // modifier under the pointer (outlines shown while ⌥ is held).
+          await page.mouse.move(this.mouse.x + 1, this.mouse.y);
+          await page.mouse.move(this.mouse.x, this.mouse.y);
+          await this.wait(450);
+        }
         if (s.double) {
           await page.mouse.dblclick(this.mouse.x, this.mouse.y, { delay: this.fast ? 0 : 60 });
         } else {

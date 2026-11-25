@@ -59,7 +59,17 @@ export async function openApp(browser, app, script, { content = [], appDir } = {
   let page;
   await context.exposeFunction("__monkeyseeShot", async ({ x, y, w, h }) => {
     const clip = { x: Math.max(0, x), y: Math.max(0, y), width: Math.max(1, w), height: Math.max(1, h) };
-    const buf = await page.screenshot({ clip, type: "jpeg", quality: 85, scale: "css", animations: "allow" });
+    // Without the recording's own cursor and key HUD in the picture.
+    const overlay = (on) => page.evaluate((v) => document.querySelectorAll("monkeysee-overlay").forEach((e) => { e.style.visibility = v; }), on ? "" : "hidden").catch(() => {});
+    page.__monkeyseeShooting = true;
+    await overlay(false);
+    let buf;
+    try {
+      buf = await page.screenshot({ clip, type: "jpeg", quality: 85, scale: "css", animations: "allow" });
+    } finally {
+      await overlay(true);
+      setTimeout(() => { page.__monkeyseeShooting = false; }, 120);
+    }
     return `data:image/jpeg;base64,${buf.toString("base64")}`;
   });
   if (app.seed) {

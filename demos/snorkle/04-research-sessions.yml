@@ -24,12 +24,10 @@ steps:
   - wait: 600
   - click: "text=New Research Session"
   - wait: 1200
-  - type: {into: .rs-field, text: "Whale migration"}
+  - type: {text: "Whale migration"}
   - press: Enter
-  - wait: 1600
-  - click: "#notebook-btn"
-    note: the session's own notebook
-  - wait: 1400
+  - wait: 2400
+    note: the session opens with its own notebook
   - click: .rs-back
     note: back to everyday tabs
   - wait: 1500
