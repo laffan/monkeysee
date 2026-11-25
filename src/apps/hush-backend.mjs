@@ -36,7 +36,7 @@ export function hushBackend(content, options = {}) {
     const kind = c.kind === "notebook" ? "notebook" : "document";
     const body = kind === "notebook" ? JSON.stringify(c.data ?? []) : c.text ?? "";
     files.set(fileId, { id: fileId, name: c.title, content: body, modified: now() - files.size, kind });
-    const node = { id: id(), name: c.title, type: kind, fileId, children: [] };
+    const node = { id: id(), name: c.title, type: kind, fileId, children: [], ...(c.proofread ? { proofread: true } : {}) };
     (c.folder ? container(c.folder).children : tree).push(node);
   }
   if (containers.size) {
@@ -94,10 +94,13 @@ export function hushBackend(content, options = {}) {
       files.set(fid, { ...f, id: fid });
       return null;
     },
+    // Hush sends a notebook save as raw bytes with the file id in a header
+    // (the Tauri mock hands them over as base64).
     save_file_raw: (args) => {
-      const fid = args.id;
+      const fid = args.__rawBody != null ? args.__headers?.["file-id"] : args.id;
+      const content = args.__rawBody != null ? Buffer.from(args.__rawBody, "base64").toString("utf8") : args.content;
       const f = files.get(fid);
-      if (f && typeof args.content === "string") { f.content = args.content; f.modified = now(); }
+      if (f && typeof content === "string") { f.content = content; f.modified = now(); }
       return null;
     },
     file_availability: ({ id: fid }) => ({ state: files.has(fid) ? "ready" : "missing" }),

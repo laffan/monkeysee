@@ -43,7 +43,16 @@ export function tauriMockScript({ handlers = {}, data = {}, label = "main", plat
       transformCallback: (fn, once) => { const id = cb++; window["_" + id] = (...a) => { if (once) delete window["_" + id]; return fn && fn(...a); }; return id; },
       unregisterCallback: (id) => { delete window["_" + id]; },
       convertFileSrc: (p, protocol = "asset") => protocol + "://localhost/" + encodeURIComponent(p),
-      invoke: async (cmd, args = {}) => {
+      invoke: async (cmd, args = {}, options) => {
+        // A raw-body invoke (bytes as the payload, details in headers) would
+        // cross to Node as a huge plain object. Send it as base64 instead;
+        // backends read it from args.__rawBody (and args.__headers).
+        if (args instanceof ArrayBuffer || ArrayBuffer.isView(args)) {
+          const bytes = args instanceof ArrayBuffer ? new Uint8Array(args) : new Uint8Array(args.buffer, args.byteOffset, args.byteLength);
+          let bin = "";
+          for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+          args = { __rawBody: btoa(bin), __headers: (options && options.headers) || {} };
+        }
         const h = handlers[cmd] || builtins[cmd];
         if (h) return h(args, data);
         if (window.__monkeyseeInvoke) return window.__monkeyseeInvoke(cmd, args);

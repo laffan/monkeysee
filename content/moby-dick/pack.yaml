@@ -16,3 +16,12 @@ items:
   opening-line:
     title: Call me Ishmael
     text: "Call me Ishmael."
+  loomings-proof:
+    # A proofread notebook made from loomings.pdf (the first four pages of
+    # chapter 1, set as a 5.5 x 8.5 in book page) by Hush's own
+    # Create Proofread Notebook code. Rebuild it the same way if the PDF changes.
+    title: Loomings-Proof
+    kind: notebook
+    proofread: true
+    file: loomings-proof.hushnote.json
+    in: Inbox

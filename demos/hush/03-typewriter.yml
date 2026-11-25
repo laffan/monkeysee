@@ -4,7 +4,7 @@ description:
   - ⌘-double-click the pane's title bar to stretch it to full height
   - turn on typewriter scrolling and start typing
   - after a few words, drag the typewriter line down to about two thirds of the pane
-  - keep typing
+  - move the cursor out of the way, then type a few more words
 
 # Script (written from the spec above; edit freely) ------------------------
 content: [pequod/*]
@@ -25,12 +25,14 @@ steps:
   - press: Meta+Shift+T
     note: turn on typewriter scrolling
   - wait: 1200
-  - type: "\n\nThere is magic in it. Let the most absent-minded of men"
+  - type: "\n\nThere is magic"
     note: start typing
   - wait: 700
   - drag: { from: ".pane-tw-line", to: [1045, 517], duration: 900 }
     note: drag the typewriter line down to two thirds
-  - wait: 900
-  - type: " be plunged in his deepest reveries, and he will infallibly lead you to water. Should you ever be athirst in the great American desert, try this experiment."
+  - move: [1200, 720]
+    note: move the cursor out of the way
+  - wait: 700
+  - type: " in it."
     note: keep typing
   - wait: 1500

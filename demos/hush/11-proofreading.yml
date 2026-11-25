@@ -1,0 +1,65 @@
+feature: proofreading
+state: a proofread notebook made from the first pages of Moby-Dick (Loomings-Proof, in the Inbox) open beside the sidebar
+description:
+  - strike out two words on the page with the red pen
+  - split the page under that line and pull it open
+  - write the replacement in the gap with the text tool, then draw a line from it to the struck words
+  - grab the last sentence of the paragraph and place it at the top of the page
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [pequod/*, moby-dick/loomings-proof]
+setup:
+  - press: Meta+Backslash
+  - click: "#panel-overlay >> text=\"Loomings-Proof\""
+  - wait: 4000
+steps:
+  - wait: 600
+  - click: "button[data-tooltip='Brush 2']"
+    note: pick the red pen
+  - wait: 400
+  - drag: { from: [842, 258], to: [903, 258], duration: 500, nudge: false }
+    note: strike out "a little"
+  - wait: 700
+  - press: s
+    note: Split tool
+  - wait: 300
+  - click: [700, 274]
+    note: cut the page under that line
+  - wait: 600
+  - drag: { from: [700, 280], to: [700, 340], duration: 700 }
+    note: pull the page open
+  - wait: 600
+  - press: t
+    note: Text tool
+  - wait: 300
+  - click: [520, 305]
+  - type: "for a while"
+    note: write the replacement in the gap
+  - press: { keys: Escape, silent: true }
+  - press: { keys: "1", silent: true }
+  - click: [1120, 480]
+    note: click off the text to deselect it
+  - wait: 300
+  - click: "button[data-tooltip='Brush 2']"
+    note: back to the red pen
+  - wait: 300
+  - drag: { from: [612, 302], via: [[700, 292], [830, 280]], to: [870, 266], duration: 700, nudge: false }
+    note: draw a line from the new words to the struck ones
+  - move: [760, 600]
+  - wait: 600
+  - press: g
+    note: Grab tool
+  - wait: 300
+  - drag: { from: [700, 652], to: [700, 739], duration: 800 }
+    note: sweep a band around the paragraph's last sentence
+  - wait: 700
+  - click: "button:has-text('Apply Grab')"
+    note: lift it out
+  - wait: 900
+  - click: [700, 180]
+    note: place it at the top of the page
+  - wait: 700
+  - press: { keys: "1", silent: true }
+  - move: [1110, 560]
+    note: move the cursor out of the way
+  - wait: 1800

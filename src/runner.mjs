@@ -149,11 +149,20 @@ class Ctx {
         await page.mouse.down();
         await this.wait(180);
         const mods = s.keys ? String(s.keys).split("+").filter(Boolean) : [];
-        // Nudge first so drag thresholds trip before the long move.
-        await this.glide(from.x + 12, from.y + 6, 120);
+        // Nudge first so drag thresholds trip before the long move. A pen
+        // stroke (nudge: false) starts where it was asked to.
+        if (s.nudge !== false) await this.glide(from.x + 12, from.y + 6, 120);
         if (mods.length) await this.overlay("showKeys", s.keys, "", s.duration + 1200);
         for (const m of mods) await page.keyboard.down(m);
-        await this.glide(to.x, to.y, s.duration, { steps: 10 });
+        // `via` points turn the drag into a path (a pen mark, say); the
+        // duration is shared out by length.
+        const pts = [...(s.via || []), [to.x, to.y]];
+        let at = { ...this.mouse };
+        const total = pts.reduce((n, [x, y]) => { const d = Math.hypot(x - at.x, y - at.y); at = { x, y }; return n + d; }, 0) || 1;
+        for (const [x, y] of pts) {
+          const d = Math.hypot(x - this.mouse.x, y - this.mouse.y);
+          await this.glide(x, y, pts.length > 1 ? Math.max(60, (s.duration * d) / total) : s.duration, { steps: pts.length > 1 ? 4 : 10 });
+        }
         await this.wait(250);
         await page.mouse.up();
         for (const m of mods.reverse()) await page.keyboard.up(m);
