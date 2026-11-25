@@ -18,7 +18,7 @@ steps:
   - press: Meta+Shift+P
     note: turn on Private Mode
   - wait: 1500
-  - type: " He signs on for the money. He stays for the telling."
+  - type: " He signs on."
     note: keep writing
   - wait: 1000
   - press: Meta+Shift+P

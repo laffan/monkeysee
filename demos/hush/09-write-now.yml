@@ -15,6 +15,6 @@ steps:
   - press: { keys: Alt, times: 3 }
     note: tap Option three times; a new blank document opens, ready to type
   - wait: 1800
-  - type: "# The whiteness of the whale\n\nWhy does white frighten Ishmael more than any colour? Start with the albatross."
+  - type: "# The whale's whiteness"
     note: write the idea down before it goes
   - wait: 1800

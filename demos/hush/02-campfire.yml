@@ -18,7 +18,7 @@ steps:
   - press: { keys: Meta, times: 3 }
     note: tap Command three times; only the words near the caret stay lit
   - wait: 1800
-  - type: "\n\nThat distance is the book's way out. The machine needs every hand, and it cannot quite hold the one who is telling the story."
+  - type: " That distance matters."
     note: keep writing; the light follows the caret
   - wait: 1500
   - press: { keys: Meta, times: 3 }

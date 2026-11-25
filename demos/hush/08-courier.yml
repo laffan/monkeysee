@@ -22,7 +22,7 @@ steps:
   - wait: 800
   - click: ".courier-row:has-text(\"Reading log\")"
   - wait: 1200
-  - type: "Seminar question: is Ahab mad, or only certain?"
+  - type: "Is Ahab mad?"
     note: write the note and send it without leaving the essay
   - wait: 700
   - press: Meta+Enter
