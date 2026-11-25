@@ -9,6 +9,7 @@ whaling glossary, the opening of chapter 1) and a project, "The Crew as a
 Machine", holding the chapter being written in five short sections and a
 notebook of research. The proofreading clip also seeds `moby-dick/loomings-proof`,
 a proofread notebook baked from `content/moby-dick/loomings.pdf`.
+No clip types more than four words in all: the clips show the feature, not the writing.
 
 | # | File | What it shows | Keys on screen |
 |---|------|---------------|----------------|
