@@ -1,6 +1,6 @@
 // Shared plumbing for the CLI commands: resolve content, start the app,
 // open it in a browser, and tidy up afterwards.
-import { getApp } from "./apps/index.mjs";
+import { loadApp } from "./apps/index.mjs";
 import { loadItem, packRefs } from "./content.mjs";
 import { launch, openApp, ensureServer, stopServer } from "./browser.mjs";
 
@@ -15,7 +15,7 @@ export function resolveContent(script, app) {
 }
 
 export async function withApp(script, { appDir, headless = true } = {}, fn) {
-  const app = getApp(script.app);
+  const app = await loadApp(script.app);
   const content = resolveContent(script, app);
   const server = await ensureServer(app, { appDir });
   const browser = await launch({ headless, viewport: script.viewport, scale: script.scale });

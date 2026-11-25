@@ -21,5 +21,16 @@
     "@anthropic-ai/sdk": "^1.14.0",
     "playwright": "1.49.1",
     "yaml": "2.6.1"
-  }
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "content",
+    "fixtures",
+    "docs",
+    "README.md"
+  ]
 }

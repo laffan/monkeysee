@@ -14,7 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import YAML from "yaml";
-import { getApp } from "./apps/index.mjs";
+import { loadApp } from "./apps/index.mjs";
 import { listPacks } from "./content.mjs";
 import { normalize, specOf, ScriptError } from "./script.mjs";
 import { withApp, describePage } from "./session.mjs";
@@ -50,7 +50,7 @@ eval steps. Reply with the YAML in one \`\`\`yaml block and nothing after it.`;
  * Returns {yaml, script}: yaml is the generated half only.
  */
 export async function plan({ spec, check = true, appDir, log = console.error }) {
-  const app = getApp(spec.app);
+  const app = await loadApp(spec.app);
   const formatDoc = fs.readFileSync(path.resolve(here, "..", "docs", "SCRIPT.md"), "utf8");
   const packs = listPacks().map((p) => ({
     pack: p.name,

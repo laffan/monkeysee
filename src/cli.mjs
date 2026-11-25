@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 // monkeysee: record short feature demos of web and Tauri app frontends.
 //
-//   monkeysee record <demos/app/x.yml> [--app-dir DIR] [--headed]
-//   monkeysee check  <demos/app/x.yml>       run setup and steps fast, no video
-//   monkeysee plan   <demos/app/x.yml> [--record] [--no-check]
+//   monkeysee record <app/x.yml> [--app-dir DIR] [--headed]
+//   monkeysee check  <app/x.yml>             run setup and steps fast, no video
+//   monkeysee plan   <app/x.yml> [--record] [--no-check]
 //                                            script a spec with the Claude API
-//   monkeysee inspect --app hush [--content pequod/*]
+//   monkeysee inspect --app NAME [--content pack/*]
 //   monkeysee fetch-content                  download full public-domain texts
 //   monkeysee apps | packs
+//   Adapters and content come from the workspace (the nearest folder with a
+//   monkeysee.json above the clip file or here), or --workspace DIR.
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
@@ -15,7 +17,8 @@ import { loadScript, normalize } from "./script.mjs";
 import { runSteps } from "./runner.mjs";
 import { startRecording, finish } from "./recorder.mjs";
 import { withApp, describePage } from "./session.mjs";
-import { appNames, getApp } from "./apps/index.mjs";
+import { appNames, loadApp } from "./apps/index.mjs";
+import { useWorkspace } from "./workspace.mjs";
 import { listPacks, fetchAll } from "./content.mjs";
 import YAML from "yaml";
 
@@ -29,11 +32,14 @@ const { values: opt, positionals } = parseArgs({
     record: { type: "boolean" },
     "no-check": { type: "boolean" },
     headed: { type: "boolean" },
+    workspace: { type: "string" },
     help: { type: "boolean", short: "h" },
   },
 });
 const [cmd, ...rest] = positionals;
 const appDir = opt["app-dir"];
+const fileArg = ["record", "check", "plan"].includes(cmd) ? rest[0] : undefined;
+useWorkspace({ dir: opt.workspace || process.env.MONKEYSEE_WORKSPACE, start: fileArg });
 
 const commands = {
   async record(file) {
@@ -78,7 +84,12 @@ const commands = {
   },
 
   async "fetch-content"() { await fetchAll(); },
-  async apps() { for (const n of appNames()) console.log(`${n}\t${getApp(n).title}\t${getApp(n).url}`); },
+  async apps() {
+    for (const n of appNames()) {
+      const a = await loadApp(n).catch(() => null); // helper modules beside the adapters are skipped
+      if (a) console.log(`${n}\t${a.title}\t${a.url}`);
+    }
+  },
   async packs() { for (const p of listPacks()) console.log(`${p.name}\t${Object.keys(p.items || {}).join(", ")}\t${p.title}`); },
 };
 
@@ -126,7 +137,7 @@ async function record(script) {
 function log(...a) { console.error(...a); }
 function usage(msg) {
   if (msg) console.error(msg + "\n");
-  console.error(fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 10).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.error(fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 12).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
   process.exit(msg ? 1 : 0);
 }
 

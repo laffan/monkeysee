@@ -1,6 +1,6 @@
 # Demo file format
 
-One YAML file per clip, in `demos/<app>/<feature>.yml`. The top half is a
+One YAML file per clip, in `<app>/<feature>.yml` in a workspace (see the README). The top half is a
 spec a person writes: what the clip is about, the state the app starts in,
 and the beats in order. The bottom half is the script that plays it, written
 from the spec by a model (`monkeysee plan`, or Claude Code following
@@ -33,11 +33,11 @@ and `check` refuse it and say so.
 
 **Spec keys.** `feature` (defaults to the file name), `state`,
 `description` (a list of beats), and `app`, which can be left out when the
-file sits in `demos/<app>/`.
+file sits in a folder named after the app in the workspace (or in `demos/<app>/`).
 
 **Script keys.** `content` (pack items to seed; `pack/*` seeds a whole
 pack), `setup` and `steps` (lists of steps, below), and optionally:
-`output` (default `out/<app>-<feature>.mp4`; `.mp4`, `.webm` or `.gif`, or
+`output` (default: the workspace's `output` pattern, else `out/<app>-<feature>.mp4`; `.mp4`, `.webm` or `.gif`, or
 a list to render several), `viewport` (CSS pixels, default
 `{width: 1280, height: 800}`), `scale` (device pixel ratio, default 2, so
 2560x1600 video), `typing` (`{wpm: 80}` by default), `overlay`

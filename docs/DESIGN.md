@@ -24,7 +24,7 @@ The cost is that anything the Rust side does (files, menus, native
 windows, the menu-bar icon) has to be faked or left out. `src/tauri-mock.mjs`
 installs a fake `window.__TAURI_INTERNALS__`; its `invoke` calls go to a
 backend object the adapter supplies, which runs in Node. For Hush that is
-`src/apps/hush-backend.mjs`, an in-memory file store answering the ~20
+`adapters/hush-backend.mjs` in the tools.natelaffan.com workspace, an in-memory file store answering the ~20
 commands the frontend uses (settings, the file tree, loading and saving
 files, creating notebooks), so desks, the sidebar, notebooks and panes all
 work. Hush's own `localStorage` fallback can't make notebooks, which is why
@@ -32,11 +32,12 @@ it isn't used.
 
 ## Pieces
 
+In this repo (the tool):
+
 ```
-demos/<app>/*.yml     one clip per file: spec on top, script below
-content/<pack>/       themed demo content (Moby-Dick, the Pequod, a whaling library)
-src/apps/<app>.mjs    adapter: how to start, seed and describe an app
-src/apps/hush-backend.mjs  in-memory stand-in for Hush's Rust commands
+src/workspace.mjs     finds the workspace (monkeysee.json) and its folders
+src/apps/fixture.mjs  the built-in notepad adapter; other adapters load from the workspace
+content/moby-dick/    sample pack for the fixture
 src/overlay.js        cursor and keystroke HUD (injected)
 src/runner.mjs        plays steps: cursor glides, drags, human-paced typing, shortcuts
 src/recorder.mjs      Chrome screencast frames -> ffmpeg
@@ -44,11 +45,20 @@ src/planner.mjs       spec -> script, via the Claude API
 src/cli.mjs           record | check | inspect | plan | fetch-content
 ```
 
+In a workspace (for example `demos/` in tools.natelaffan.com):
+
+```
+monkeysee.json        marks the workspace; adapters, content and output paths
+adapters/<app>.mjs    adapter: how to start, seed and describe an app
+content/<pack>/       themed demo content (Moby-Dick, the Pequod, a whaling library, a shoreline web)
+<app>/*.yml           one clip per file: spec on top, script below
+```
+
 **Adapters** hold everything app-specific: the dev-server command and URL,
 a `ready` check, a Tauri backend (or a `seed` function for apps that keep
 data in the browser), and a `guide` (selectors, shortcuts, how to reach
 common states) that is written for a model to read.
-Adding Zotero Helper or Snorkle means writing one of these.
+Adding an app means writing one of these in the workspace.
 
 **Content packs** are folders with a `pack.yaml` and the files it lists:
 Markdown for prose, JSON for structured data (the `library` pack is
@@ -91,7 +101,7 @@ can be read and edited:
    writes the script, runs `monkeysee check` (setup and steps fast, no
    video) until it passes, then `monkeysee record` and looks at frames.
    CLAUDE.md tells it how.
-2. **`monkeysee plan demos/hush/10-panes.yml`.** The same loop through the
+2. **`monkeysee plan hush/10-panes.yml`.** The same loop through the
    Claude API: the model gets the file format, the adapter's guide, the
    content packs, a screenshot and element list of the app at launch, and
    the spec; it answers with YAML, which is validated and dry-run against
@@ -107,14 +117,14 @@ still need a look.
 
 ## What's there and what isn't
 
-Working: the Hush adapter with the full app (notebooks, panes) on a fake
-backend, a fixture app for testing without any of your repos, the overlay,
-recording to mp4/webm/gif at 2x, the `check` and `inspect` commands, the
-Moby-Dick, Pequod and whaling-library packs, and the
-fifteen-clip Hush series in `demos/hush/` (see its README).
+Working: workspaces (adapters, packs and clips kept outside this repo),
+a fixture app for testing without any of your repos, the overlay,
+recording to mp4/webm/gif at 2x, and the `check` and `inspect` commands.
+The tools.natelaffan.com workspace has Hush and Snorkle adapters on fake
+backends, their packs, and the Hush and Snorkle clip series.
 
 Not yet tried: the `plan` command against the API (written to the current
-SDK, never run here); adapters for Zotero Helper and Snorkle.
+SDK, never run here); an adapter for Zotero Helper.
 
 Known limits:
 
@@ -130,9 +140,9 @@ Known limits:
 
 ## Open questions
 
-- **Zotero Helper and Snorkle.** Both call many Tauri commands
+- **Zotero Helper.** It calls many Tauri commands
   (`load_file`, `get_settings`, `list_files`, `update_zotero_item`, …).
-  Each adapter needs handlers that return plausible data from a content
+  Its adapter needs handlers that return plausible data from a content
   pack. Is it better to mock at the IPC layer (current approach), or to
   add a small "demo mode" inside each app that the apps own?
 - **Camera moves.** Zooming into the part of the screen that matters
@@ -141,5 +151,5 @@ Known limits:
 - **Framing.** Clips are the bare app. A window frame (title bar, shadow)
   and a background could be composited by ffmpeg for site use.
 - **Sound.** Key clicks or music would be a mixing step after recording.
-- **Where clips live.** The promotional sites could build their clips from
-  these scripts in CI, so clips stay current with the apps.
+- **Building clips in CI.** A workspace's site could re-record its clips
+  in CI, so clips stay current with the apps.

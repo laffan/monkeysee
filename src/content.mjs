@@ -2,29 +2,31 @@
 // that an app adapter seeds into the app before recording, or that a
 // script types or pastes from.
 //
-// A pack is a folder under content/ with a pack.yaml listing its items.
+// A pack is a folder with a pack.yaml listing its items, in the workspace's
+// content folder or in monkeysee's own content/ (see workspace.mjs).
 // An item is either inline `text`, a `file` (Markdown or JSON), or both a
 // shipped file and a `fetch` recipe that pulls the full text from its
 // public-domain source into <file>.full.md.
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-
-const here = path.dirname(fileURLToPath(import.meta.url));
-export const CONTENT_DIR = path.resolve(here, "..", "content");
+import { contentDirs } from "./workspace.mjs";
 
 export function listPacks() {
-  return fs.readdirSync(CONTENT_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && fs.existsSync(path.join(CONTENT_DIR, d.name, "pack.yaml")))
-    .map((d) => readPack(d.name));
+  const names = new Set();
+  for (const root of contentDirs()) {
+    for (const d of fs.readdirSync(root, { withFileTypes: true })) {
+      if (d.isDirectory() && fs.existsSync(path.join(root, d.name, "pack.yaml"))) names.add(d.name);
+    }
+  }
+  return [...names].map((n) => readPack(n));
 }
 
 export function readPack(name) {
-  const dir = path.join(CONTENT_DIR, name);
-  const file = path.join(dir, "pack.yaml");
-  if (!fs.existsSync(file)) throw new Error(`No content pack "${name}" (looked for ${file})`);
-  return { ...YAML.parse(fs.readFileSync(file, "utf8")), dir };
+  const dirs = contentDirs();
+  const dir = dirs.map((root) => path.join(root, name)).find((d) => fs.existsSync(path.join(d, "pack.yaml")));
+  if (!dir) throw new Error(`No content pack "${name}" (looked in ${dirs.join(", ")})`);
+  return { ...YAML.parse(fs.readFileSync(path.join(dir, "pack.yaml"), "utf8")), name, dir };
 }
 
 /** Every item of a pack, in pack.yaml order, as "pack/item" refs. */

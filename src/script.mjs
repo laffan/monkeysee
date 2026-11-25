@@ -3,7 +3,7 @@
 // written by a model (monkeysee plan, or Claude Code) and editable by hand:
 //
 //   feature: panes                     # what the clip is about
-//   app: hush                          # optional when the file is in demos/<app>/
+//   app: hush                          # optional when the file is in <workspace>/<app>/ or demos/<app>/
 //   state: left sidebar open, ten demo text and notebook files
 //   description:                       # the beats, in order
 //     - working on text document
@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
+import { workspace } from "./workspace.mjs";
 
 export const STEP_OPS = {
   wait: "pause in milliseconds",
@@ -68,7 +69,7 @@ export function normalize(data, { file, spec = false } = {}) {
   if (!data || typeof data !== "object") throw new ScriptError(["File is empty or not a mapping"]);
 
   const app = data.app || appFromPath(file);
-  if (!app) errors.push("`app` is required (or put the file in demos/<app>/)");
+  if (!app) errors.push("`app` is required (or put the file in a folder named after the app, in the workspace)");
   const feature = data.feature || (file ? path.basename(file).replace(/\.(ya?ml|json)$/, "") : "demo");
   const scripted = Array.isArray(data.steps) && data.steps.length > 0;
   if (!scripted && !spec) {
@@ -80,7 +81,7 @@ export function normalize(data, { file, spec = false } = {}) {
     }
   }
 
-  const outputs = [].concat(data.output || `out/${app || "app"}-${slug(feature)}.mp4`);
+  const outputs = [].concat(data.output || defaultOutput(app || "app", slug(feature)));
   for (const o of outputs) if (!/\.(mp4|webm|gif)$/i.test(o)) errors.push(`output "${o}" must end in .mp4, .webm or .gif`);
 
   const content = [].concat(data.content || []).map((c, i) => {
@@ -112,8 +113,19 @@ export function normalize(data, { file, spec = false } = {}) {
   };
 }
 
+// The workspace's "output" pattern ({app}, {feature}), else out/<app>-<feature>.mp4.
+function defaultOutput(app, feature) {
+  const pattern = workspace()?.output;
+  return pattern ? pattern.replaceAll("{app}", app).replaceAll("{feature}", feature) : `out/${app}-${feature}.mp4`;
+}
+
 function appFromPath(file) {
   if (!file) return null;
+  const ws = workspace();
+  if (ws) {
+    const rel = path.relative(ws.root, path.resolve(file)).split(path.sep);
+    if (rel.length >= 2 && rel[0] !== "..") return rel[0];
+  }
   const parts = path.resolve(file).split(path.sep);
   const i = parts.lastIndexOf("demos");
   return i >= 0 && i < parts.length - 2 ? parts[i + 1] : null;
