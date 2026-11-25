@@ -1,5 +1,5 @@
 feature: shuffle
-state: the essay open, caret in the first paragraph
+state: the "The engine" section open from the chapter project, caret in the first paragraph, sidebar open
 description:
   - select the paragraph and open it in the Shuffle Editor; each sentence becomes a card
   - drag a sentence to a new place
@@ -9,8 +9,7 @@ description:
 content: [pequod/*]
 setup:
   - press: Meta+Backslash
-  - click: "text=The Crew as a Machine"
-  - press: Meta+Backslash
+  - click: "text=\"The engine\""
   - waitFor: ".cm-line:has-text(\"Melville builds\")"
   - click: ".cm-line:has-text(\"Melville builds\")"
   - press: { keys: Meta+ArrowLeft, times: 2 }

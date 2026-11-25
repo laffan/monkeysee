@@ -1,5 +1,5 @@
 feature: private
-state: the essay open, sidebar closed, caret at the end
+state: the "Ishmael outside" section open from the chapter project, caret at the end, sidebar open
 description:
   - turn on Private Mode; every word on screen is blacked out
   - keep writing; new words are hidden too
@@ -9,8 +9,7 @@ description:
 content: [pequod/*]
 setup:
   - press: Meta+Backslash
-  - click: "text=The Crew as a Machine"
-  - press: Meta+Backslash
+  - click: "text=\"Ishmael outside\""
   - waitFor: ".cm-line:has-text(\"Ishmael is the exception\")"
   - click: ".cm-line:has-text(\"Ishmael is the exception\")"
   - press: Meta+End

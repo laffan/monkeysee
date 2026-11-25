@@ -48,7 +48,7 @@ export function loadItem(ref) {
     if (src.endsWith(".json")) data = JSON.parse(raw);
     else text = raw;
   }
-  return { pack: packName, item: itemName, title: item.title || itemName, kind: item.kind || "document", text, data };
+  return { pack: packName, item: itemName, title: item.title || itemName, kind: item.kind || "document", folder: item.in || null, text, data };
 }
 
 function splitRef(ref) {

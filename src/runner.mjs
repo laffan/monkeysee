@@ -51,12 +51,17 @@ class Ctx {
     const from = { ...this.mouse };
     const dist = Math.hypot(x - from.x, y - from.y);
     const ms = this.fast ? 0 : duration ?? Math.min(900, 260 + dist * 0.9);
-    const frames = Math.max(1, Math.round(ms / 16));
-    for (let i = 1; i <= frames; i++) {
-      const t = i / frames;
-      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // Paced by the clock, not by a frame count: when the page is slow to
+    // answer each move (a sidebar re-rendering under a drag), the glide
+    // skips positions instead of stretching out.
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const start = Date.now();
+    for (;;) {
+      const t = ms && !this.fast ? Math.min(1, (Date.now() - start) / ms) : 1;
+      const e = ease(t);
       await this.page.mouse.move(from.x + (x - from.x) * e, from.y + (y - from.y) * e);
-      if (!this.fast) await this.page.waitForTimeout(16);
+      if (t >= 1) break;
+      await this.page.waitForTimeout(16);
     }
     this.mouse = { x, y };
   }

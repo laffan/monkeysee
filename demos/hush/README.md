@@ -1,15 +1,17 @@
 # Hush: the tour, in clips
 
 A series for someone who already writes in a plain Markdown editor and is
-meeting Hush for the first time. It starts with what will feel familiar,
+meeting Hush for the first time. It starts with the command palette,
 then moves through the ways Hush helps you concentrate, the ways it lets
 you rearrange text, and finally the tools for catching and keeping ideas.
-Every clip uses the `pequod` pack: an essay on Moby-Dick, character notes,
-a glossary, a reading log, the opening of chapter 1 and a notebook.
+Every clip uses the `pequod` pack, laid out as a writer's desk with the
+sidebar open: an Inbox of notes (a reading log, seminar questions, a
+whaling glossary, the opening of chapter 1) and a project, "The Crew as a
+Machine", holding the chapter being written in five short sections and a
+notebook of research.
 
 | # | File | What it shows | Keys on screen |
 |---|------|---------------|----------------|
-| 1 | `01-markdown.yml` | Markdown renders as you type; the marks stay faint | |
 | 2 | `02-palette.yml` | The command palette: browse it, switch style, turn on Midnight | ⌘P |
 | 3 | `03-focus.yml` | Focus Mode lights only the current sentence; word count | ⌘S, ⌘⇧W |
 | 4 | `04-zen.yml` | Zen Focus keeps the line you write mid-screen | ⌘⇧S |
@@ -23,7 +25,7 @@ a glossary, a reading log, the opening of chapter 1 and a notebook.
 | 12 | `12-courier.yml` | Courier: send a note to the end of another document | ⇧⇧⇧, ⌘↩ |
 | 13 | `13-campfire.yml` | Campfire Cursor: a glow around the caret | ⌘⌘⌘ |
 | 14 | `14-write-now.yml` | Write Now: a blank page from anywhere | ⌥⌥⌥ |
-| 15 | `15-panes.yml` | Notebooks as panes: dock one, drag a note into the essay | ⌘⇧O |
+| 15 | `15-panes.yml` | Panes: drag a section and the notebook out of the sidebar, dock them, drag a note into the text | ⌘ held while dragging |
 
 Record one with `node src/cli.mjs record demos/hush/08-shuffle.yml`, or
 all of them with a loop over `demos/hush/*.yml`. Each writes

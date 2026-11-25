@@ -1,5 +1,5 @@
 feature: folding
-state: the reading log open, a document with four sections
+state: the reading log open, a document with four sections, sidebar open
 description:
   - fold every section from the command palette
   - open the title; the sections underneath stay folded, like an outline
@@ -9,8 +9,7 @@ description:
 content: [pequod/*]
 setup:
   - press: Meta+Backslash
-  - click: "text=Reading log"
-  - press: Meta+Backslash
+  - click: "text=\"Reading log\""
   - waitFor: ".cm-line:has-text(\"Spouter-Inn\")"
   - click: ".cm-line:has-text(\"Spouter-Inn\")"
 steps:

@@ -31,9 +31,14 @@ export default {
   guide: `
 Hush is a distraction-free Markdown writing app (macOS menu-bar app and iPad).
 At launch the sidebar is closed and no document may be showing: open one first, in
-setup, by toggling the sidebar (Meta+Backslash) and clicking its title
-("text=The Crew as a Machine"). Toggle the sidebar again if the state wants it closed.
-Seeded items appear in the sidebar by title, in pack order; notebooks too.
+setup, by toggling the sidebar (Meta+Backslash) and clicking its title with an exact
+text selector ("text=\"Ishmael outside\""). Keep the sidebar open unless the state
+wants it closed. Seeded items appear in the sidebar by title, in pack order; an
+item's "in:" puts it in the Inbox (shown with a preview of its text) or in a project.
+The pequod pack: Inbox holds Reading log, Seminar questions, Whaling glossary and
+Loomings; the project "The Crew as a Machine" holds five sections (The engine,
+The quarter-deck, Starbuck's bind, The harpooneers, Ishmael outside) and the
+notebook "The Pequod's crew".
 
 Selectors:
 - Editor text area: ".cm-content" (CodeMirror 6). The editor has focus at start.
@@ -72,10 +77,13 @@ Default shortcuts (Mod = Meta on macOS; write them as Meta+... in press steps):
 - Meta+Shift+O      open a file as a floating pane: type part of its title, press Enter
 
 Panes and notebooks:
+- Drag a sidebar row into the editor with Meta held to open it as a floating pane:
+  {drag: {from: "text=\"Starbuck's bind\"", to: [760, 300], keys: Meta}}.
 - A pane opens floating near the top left and shows the middle of the notebook's
   canvas; the pequod pack's notebook is laid out to fit it.
 - Dock a pane by dragging its title bar to the window edge:
-  {drag: {from: .floating-pane-titlebar, to: [1255, 400]}} docks it right.
+  {drag: {from: .floating-pane-titlebar, to: [1262, 400]}} docks it right, and
+  [640, 792] docks it to the bottom (".floating-pane.docked-bottom").
   The editor narrows; the canvas does not recentre.
 - Dragging a notebook card into the editor and dropping it on a line attaches it to
   the document as a margin note beside that paragraph. Holding Meta through the drop

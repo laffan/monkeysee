@@ -1,5 +1,5 @@
 feature: cards
-state: the essay open, caret in the second paragraph
+state: the "Starbuck's bind" section open from the chapter project, caret in the second paragraph, sidebar open
 description:
   - select a sentence and turn it into a card; it moves to the margin
   - keep writing above it; the card moves down with its line
@@ -8,9 +8,8 @@ description:
 content: [pequod/*]
 setup:
   - press: Meta+Backslash
-  - click: "text=The Crew as a Machine"
-  - press: Meta+Backslash
-  - waitFor: ".cm-line:has-text(\"Melville builds\")"
+  - click: "text=\"Starbuck's bind\""
+  - waitFor: ".cm-line:has-text(\"Starbuck sees the danger\")"
   - click: ".cm-line:has-text(\"Starbuck sees the danger\")"
 steps:
   - press: Meta+L
@@ -19,7 +18,7 @@ steps:
   - press: Meta+Shift+Comma
     note: turn it into a card
   - wait: 2000
-  - click: [720, 201]
+  - click: [960, 154]
     note: keep writing above it; the card moves down with its line
   - wait: 500
   - type: " Even the cook has a station, and the cabin boy keeps the time."

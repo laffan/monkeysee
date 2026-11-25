@@ -1,5 +1,5 @@
 feature: typewriter
-state: the first chapter of Moby-Dick open, caret at the end, sidebar closed
+state: the first chapter of Moby-Dick open, sidebar open, caret at the end
 description:
   - turn on typewriter scrolling; the page scrolls so the caret line stays at mid-screen
   - write a few lines
@@ -9,8 +9,7 @@ description:
 content: [pequod/*]
 setup:
   - press: Meta+Backslash
-  - click: "text=Loomings"
-  - press: Meta+Backslash
+  - click: "text=\"Loomings\""
   - waitFor: ".cm-line:has-text(\"Circumambulate\")"
   - click: ".cm-line:has-text(\"Circumambulate\")"
   - press: Meta+End

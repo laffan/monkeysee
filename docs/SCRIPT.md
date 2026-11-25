@@ -19,7 +19,7 @@ description:                   # the beats, in order
 content: [pequod/*]            # what the app is seeded with
 setup:                         # brings the app to `state`; runs fast, not recorded
   - press: Meta+Backslash
-  - click: "text=The Crew as a Machine"
+  - click: "text=\"Ishmael outside\""
 steps:                         # recorded, one group per beat
   - type: " He is also the only one left to tell it."
     note: working on text document

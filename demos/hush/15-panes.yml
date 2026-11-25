@@ -1,35 +1,33 @@
 feature: panes
-state: left sidebar open, ten demo text and notebook files
+state: sidebar open on the chapter project; one section open in the editor
 description:
-  - working on text document
-  - open notebook with flowchart and notes as a pane
-  - dock pane to right
-  - drag a note from notebook into document
+  - drag a section of the chapter out of the sidebar; it opens as a pane
+  - dock that pane to the right
+  - drag the research notebook out of the sidebar as a second pane and dock it to the bottom
+  - drag a note from the notebook into the section being written
 
 # Script (written from the spec above; edit freely) ------------------------
 content: [pequod/*]
-typing: { wpm: 120 }
 setup:
-  - press: { keys: Meta+Backslash, note: open the sidebar }
-  - click: "text=The Crew as a Machine"
-  - waitFor: ".cm-line:has-text(\"Ishmael is the exception\")"
-  - click: ".cm-line:has-text(\"Ishmael is the exception\")"
-  - press: Meta+End
-  - press: Backspace
+  - press: Meta+Backslash
+  - click: "text=\"The engine\""
+  - waitFor: ".cm-line:has-text(\"nobody is free\")"
+  - click: ".cm-line:has-text(\"nobody is free\")"
 steps:
-  - type: " He is also the only one left to tell it."
-    note: working on text document
-  - wait: 800
-  - press: Meta+Shift+O
-    note: open notebook as a pane
-  - wait: 400
-  - type: pequod
-  - wait: 400
-  - press: Enter
-  - wait: 1500
-  - drag: { from: .floating-pane-titlebar, to: [1255, 400], duration: 1100 }
-    note: dock pane to right
-  - wait: 1400
-  - drag: { from: ".hush-card-nb:has-text(\"doubloon\") .hush-card-header", to: ".cm-line:has-text(\"nobody is free\")", duration: 1200 }
-    note: drag a note from notebook into document
-  - wait: 1800
+  - drag: { from: "text=\"Starbuck's bind\"", to: [760, 300], keys: Meta, duration: 1200 }
+    note: drag a section out of the sidebar; it opens as a pane
+  - wait: 1000
+  - drag: { from: .floating-pane-titlebar, to: [1262, 400], duration: 1100 }
+    note: dock it to the right
+  - wait: 1000
+  - drag: { from: "text=\"The Pequod's crew\"", to: [640, 420], keys: Meta, duration: 1200 }
+    note: drag the research notebook out as a second pane
+  - wait: 1000
+  - drag: { from: ".floating-pane:not(.docked) .floating-pane-titlebar", to: [640, 792], duration: 1100 }
+    note: dock it to the bottom
+  - wait: 900
+  - scroll: { at: ".floating-pane.docked-bottom", by: [0, 140], duration: 800 }
+  - wait: 600
+  - drag: { from: ".hush-card-nb:has-text(\"doubloon\") .hush-card-header", to: ".cm-line:has-text(\"nobody is free\")", duration: 1300 }
+    note: drag a note from the notebook into the section
+  - wait: 2000

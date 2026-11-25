@@ -52,8 +52,10 @@ Adding Zotero Helper or Snorkle means writing one of these.
 
 **Content packs** are folders with a `pack.yaml` and the files it lists:
 Markdown for prose, JSON for structured data (the `library` pack is
-CSL-JSON for Zotero demos; the `pequod` pack has ten Hush files, including
-a notebook with a crew flowchart and two notes). A pack item can carry a `fetch` recipe for the
+CSL-JSON for Zotero demos; the `pequod` pack is a Hush desk: four notes in
+the Inbox and a chapter project with five section files and a notebook with
+a crew flowchart and two notes). An item's `in:` puts it in Hush's Inbox or
+in a project of that name. A pack item can carry a `fetch` recipe for the
 full text; `monkeysee fetch-content` downloads it locally. Scripts refer to
 items as `pack/item`, either to seed the app or as text to type
 (`{content: moby-dick/chapter-1, paragraph: 2, words: 20}`).

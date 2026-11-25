@@ -15,13 +15,34 @@ const hash = (s) => crypto.createHash("sha1").update(s ?? "").digest("hex");
  */
 export function hushBackend(content, options = {}) {
   const files = new Map();
-  const tree = [];
+  let tree = [];
+  // An item's `in` puts it inside a container: "Inbox" is Hush's own
+  // Inbox; any other name is a project, made the first time it is named.
+  // With containers, everything sits in one desk, as on a real install.
+  const deskId = id();
+  const containers = new Map();
+  const container = (name) => {
+    if (!containers.has(name)) {
+      const node = name === "Inbox"
+        ? { id: `__inbox__:${deskId}`, name: "Inbox", type: "project", children: [] }
+        : { id: id(), name, type: "project", children: [] };
+      containers.set(name, node);
+      tree.push(node);
+    }
+    return containers.get(name);
+  };
   for (const c of content) {
     const fileId = id();
     const kind = c.kind === "notebook" ? "notebook" : "document";
     const body = kind === "notebook" ? JSON.stringify(c.data ?? []) : c.text ?? "";
     files.set(fileId, { id: fileId, name: c.title, content: body, modified: now() - files.size, kind });
-    tree.push({ id: id(), name: c.title, type: kind, fileId, children: [] });
+    const node = { id: id(), name: c.title, type: kind, fileId, children: [] };
+    (c.folder ? container(c.folder).children : tree).push(node);
+  }
+  if (containers.size) {
+    if (!containers.has("Inbox")) container("Inbox");
+    const inbox = containers.get("Inbox");
+    tree = [{ id: deskId, name: "Personal", type: "desk", createdAt: now(), children: [inbox, ...tree.filter((n) => n !== inbox)] }];
   }
   let fileTree = tree;
   let settings = { ...(options.settings || {}) };
