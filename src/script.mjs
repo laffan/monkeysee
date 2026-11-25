@@ -24,7 +24,7 @@ export const STEP_OPS = {
   wait: "pause in milliseconds",
   click: "Playwright selector, [x, y] in viewport pixels, or {selector | at, double?, keys?, button?: right}; the cursor glides there first",
   move: "glide the cursor to a selector or [x, y] without clicking",
-  drag: "{from, to, via?, keys?, duration?, nudge?}: press on `from`, glide (through the [x, y] points in `via`) to `to`, release; from/to are selectors or [x, y]; keys (e.g. Meta) are held through the drop and shown; nudge: false skips the small opening move (for pen strokes)",
+  drag: "{from, to, via?, keys?, duration?, nudge?, hold?}: press on `from`, glide (through the [x, y] points in `via`) to `to`, release; from/to are selectors or [x, y]; keys (e.g. Meta) are held through the drop and shown; nudge: false skips the small opening move (for pen strokes), nudge: [dx, dy] aims it; hold: ms to keep the button down without moving first (press-and-hold gestures)",
   type: "text typed at a human pace, or {text | content, paragraph?, words?, into?, wpm?}",
   paste: "text inserted at once (the HUD shows ⌘V), or {text | content, paragraph?, words?, into?}",
   press: "key combo such as Meta+S, or {keys, times?, silent?}; shown in the keystroke HUD unless silent",
@@ -169,6 +169,8 @@ function normalizeStep(step, i, errors, list) {
       need(point(s.to), "needs to: a selector or [x, y]");
       need(s.via == null || (Array.isArray(s.via) && s.via.every((p) => Array.isArray(p) && p.length === 2)), "via should be a list of [x, y] points");
       s.duration ??= 900;
+      need(s.nudge == null || typeof s.nudge === "boolean" || (Array.isArray(s.nudge) && s.nudge.length === 2), "nudge should be true, false or [dx, dy]");
+      need(s.hold == null || (Number.isFinite(s.hold) && s.hold >= 0), "hold should be milliseconds");
       break;
     case "type":
     case "paste":

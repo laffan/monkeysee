@@ -168,11 +168,17 @@ class Ctx {
         await this.glide(from.x, from.y);
         await this.wait(150);
         await page.mouse.down();
-        await this.wait(180);
+        // `hold`: a press-and-hold that has to stay still before it moves
+        // (a long-press that starts a selection, say).
+        await this.wait(s.hold ?? 180);
         const mods = s.keys ? String(s.keys).split("+").filter(Boolean) : [];
         // Nudge first so drag thresholds trip before the long move. A pen
         // stroke (nudge: false) starts where it was asked to.
-        if (s.nudge !== false) await this.glide(from.x + 12, from.y + 6, 120);
+        // `nudge: [dx, dy]` sets the direction (a pull that must start upward).
+        if (s.nudge !== false) {
+          const [nx, ny] = Array.isArray(s.nudge) ? s.nudge : [12, 6];
+          await this.glide(from.x + nx, from.y + ny, 120);
+        }
         if (mods.length) await this.overlay("showKeys", s.keys, "", s.duration + 1200);
         for (const m of mods) await page.keyboard.down(m);
         // `via` points turn the drag into a path (a pen mark, say); the
