@@ -59,7 +59,7 @@ scripts put the beat's words in the note of its first step.
 | Step | Short form | Long form | What it does |
 |---|---|---|---|
 | `wait` | `wait: 800` | | Pause, in milliseconds |
-| `click` | `click: <selector>` or `click: [x, y]` | `{selector, double: true}` | Cursor glides to the element (or to that point in the 1280×800 viewport) and clicks. A point is for spots no element marks, like the end of a line |
+| `click` | `click: <selector>` or `click: [x, y]` | `{selector, double: true, keys: Meta}` | Cursor glides to the element (or to that point in the 1280×800 viewport) and clicks. `keys` holds modifiers through the click and shows them in the key overlay. A point is for spots no element marks, like the end of a line |
 | `move` | `move: <selector>` or `move: [x, y]` | | Cursor glides to the element or point |
 | `drag` | | `{from, to, keys, duration: 900}` | Presses on `from`, glides to `to`, releases; each is a selector or `[x, y]`. `keys` (e.g. `Meta`) are held through the drop and shown in the HUD |
 | `type` | `type: "text"` | `{text \| content, paragraph, words, into, wpm}` | Types at a human pace (rhythm is the same on every render) |

@@ -47,8 +47,18 @@ class Ctx {
   }
 
   // Ease-in-out glide from the current cursor position to (x, y).
-  async glide(x, y, duration) {
+  // In fast runs (check, setup) a glide is one jump, except where `steps`
+  // asks for a few moves: drags need them for the app to see a drag.
+  async glide(x, y, duration, { steps = 0 } = {}) {
     const from = { ...this.mouse };
+    if (this.fast && steps > 1) {
+      for (let i = 1; i <= steps; i++) {
+        await this.page.mouse.move(from.x + ((x - from.x) * i) / steps, from.y + ((y - from.y) * i) / steps);
+        await this.page.waitForTimeout(16);
+      }
+      this.mouse = { x, y };
+      return;
+    }
     const dist = Math.hypot(x - from.x, y - from.y);
     const ms = this.fast ? 0 : duration ?? Math.min(900, 260 + dist * 0.9);
     // Paced by the clock, not by a frame count: when the page is slow to
@@ -109,6 +119,14 @@ class Ctx {
         if (s.at) await this.glide(...s.at);
         else await this.glideTo(s.selector);
         await this.wait(120);
+        // Modifier keys held through the click (e.g. ⌘-double-click) show
+        // in the HUD like a key press.
+        const mods = s.keys ? String(s.keys).split("+").filter(Boolean) : [];
+        if (mods.length) {
+          await this.overlay("showKeys", s.keys, "", 1600);
+          await this.wait(220);
+        }
+        for (const m of mods) await page.keyboard.down(m);
         if (s.double) {
           await page.mouse.dblclick(this.mouse.x, this.mouse.y, { delay: this.fast ? 0 : 60 });
         } else {
@@ -116,6 +134,7 @@ class Ctx {
           await page.waitForTimeout(this.fast ? 0 : 70);
           await page.mouse.up();
         }
+        for (const m of mods.reverse()) await page.keyboard.up(m);
         await this.wait(250);
         break;
       }
@@ -134,7 +153,7 @@ class Ctx {
         await this.glide(from.x + 12, from.y + 6, 120);
         if (mods.length) await this.overlay("showKeys", s.keys, "", s.duration + 1200);
         for (const m of mods) await page.keyboard.down(m);
-        await this.glide(to.x, to.y, s.duration);
+        await this.glide(to.x, to.y, s.duration, { steps: 10 });
         await this.wait(250);
         await page.mouse.up();
         for (const m of mods.reverse()) await page.keyboard.up(m);
