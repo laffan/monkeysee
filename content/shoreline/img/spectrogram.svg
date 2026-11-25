@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
+  <defs>
+    <linearGradient id="heat" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f9e04b"/><stop offset=".5" stop-color="#ef6c35"/><stop offset="1" stop-color="#b0206e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="300" fill="#140a33"/>
+  <g stroke="#2b1f5c" stroke-width="1"><line x1="0" y1="75" x2="800" y2="75"/><line x1="0" y1="150" x2="800" y2="150"/><line x1="0" y1="225" x2="800" y2="225"/></g>
+  <g fill="none" stroke="url(#heat)" stroke-linecap="round">
+    <path d="M40 220 C 80 140, 120 120, 160 210" stroke-width="10"/>
+    <path d="M190 230 C 220 200, 250 200, 280 232" stroke-width="8"/>
+    <path d="M310 120 C 350 80, 380 80, 420 140 C 440 170, 460 190, 500 150" stroke-width="11"/>
+    <path d="M530 240 L 560 180 L 590 240" stroke-width="8"/>
+    <path d="M620 160 C 660 100, 700 110, 760 170" stroke-width="10"/>
+  </g>
+  <g fill="none" stroke="#7d3fc2" stroke-width="4" opacity=".7">
+    <path d="M40 250 C 80 190, 120 170, 160 240"/><path d="M310 170 C 350 130, 380 130, 420 190"/><path d="M620 210 C 660 160, 700 160, 760 220"/>
+  </g>
+</svg>

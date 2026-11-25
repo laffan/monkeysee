@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440">
+  <rect width="800" height="440" fill="#5b3a29"/>
+  <path d="M70 60 L390 80 L390 400 L70 380 Z" fill="#f3e6c8"/>
+  <path d="M410 80 L730 60 L730 380 L410 400 Z" fill="#efe0bf"/>
+  <rect x="388" y="76" width="24" height="330" fill="#3d2519"/>
+  <g stroke="#8a7350" stroke-width="2">
+    <line x1="100" y1="120" x2="360" y2="134"/><line x1="100" y1="150" x2="360" y2="164"/><line x1="100" y1="180" x2="360" y2="194"/><line x1="100" y1="210" x2="340" y2="223"/>
+    <line x1="100" y1="240" x2="360" y2="254"/><line x1="100" y1="270" x2="320" y2="282"/><line x1="100" y1="300" x2="360" y2="314"/>
+    <line x1="440" y1="132" x2="700" y2="118"/><line x1="440" y1="162" x2="700" y2="148"/><line x1="440" y1="192" x2="680" y2="179"/><line x1="440" y1="222" x2="700" y2="208"/>
+  </g>
+  <g fill="#2e5e8c"><path d="M470 300 c 30 -40 90 -46 130 -20 c -30 30 -90 40 -130 20 z"/></g>
+  <text x="120" y="110" font-family="Caladea, serif" font-style="italic" font-size="20" fill="#5a4630">Nov. 3rd, wind NE, heavy swell</text>
+  <text x="450" y="110" font-family="Caladea, serif" font-style="italic" font-size="20" fill="#5a4630">Lamp lit 4.52 pm</text>
+</svg>

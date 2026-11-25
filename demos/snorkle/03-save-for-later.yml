@@ -1,0 +1,39 @@
+feature: save-for-later
+state: a lighthouse logbooks article open among whale tabs
+description:
+  - save the article for later from its tab row; the tab closes and the page is kept
+  - open History; the saved copy is there, open it
+  - add the series' other two parts by tapping their links; the saved copy now holds three pages
+
+content: [shoreline/*]
+appOptions:
+  tabs:
+    - https://whaleatlas.org/species/humpback
+    - https://harborgazette.com/coast/logbooks-online
+    - https://seaforecast.net/gull-point
+  active: 1
+  later:
+    - {url: "https://tidepoolguide.net/rocky-shore", minutesAgo: 1500}
+steps:
+  - wait: 1000
+  - move: "#tabs .tab:has-text(\"lighthouse logbooks\")"
+  - wait: 500
+  - click: "#tabs .tab:has-text(\"lighthouse logbooks\") .row-actions button.later"
+    note: Save for Later
+  - wait: 1800
+  - press: Meta+Shift+H
+    note: History
+  - wait: 1200
+  - click: "#later-section .later-card:has-text(\"lighthouse logbooks\")"
+  - wait: 1600
+  - click: "#later-section .later-card:has-text(\"lighthouse logbooks\") button[aria-label^=\"Add\"]"
+    note: add pages
+  - wait: 1000
+  - click: "page: .series a:has-text(\"storms\")"
+  - wait: 500
+  - click: "page: .series a:has-text(\"families\")"
+  - wait: 800
+  - click: "#pick-add"
+  - wait: 2400
+  - move: [1180, 120]
+  - wait: 900

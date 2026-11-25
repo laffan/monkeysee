@@ -40,8 +40,21 @@ class Ctx {
     return this.page.evaluate(({ fn, args }) => window.__monkeysee?.[fn]?.(...args), { fn, args });
   }
 
+  // A selector can reach into a frame: "frame(<frame css>) <selector>",
+  // or "page: <selector>" for the page an app shows in its visible
+  // content frame (see the app's guide).
+  loc(selector) {
+    const sel = String(selector);
+    const pageFrame = this.script.pageFrame || "iframe:visible";
+    let m = /^page:\s*(.+)$/s.exec(sel);
+    if (m) return this.page.frameLocator(pageFrame).locator(m[1]).first();
+    m = /^frame\((.+?)\)\s+(.+)$/s.exec(sel);
+    if (m) return this.page.frameLocator(m[1]).locator(m[2]).first();
+    return this.page.locator(sel).first();
+  }
+
   async locate(selector) {
-    const loc = this.page.locator(selector).first();
+    const loc = this.loc(selector);
     await loc.waitFor({ state: "visible", timeout: this.timeout });
     return loc;
   }
@@ -130,9 +143,10 @@ class Ctx {
         if (s.double) {
           await page.mouse.dblclick(this.mouse.x, this.mouse.y, { delay: this.fast ? 0 : 60 });
         } else {
-          await page.mouse.down();
+          const button = s.button || "left";
+          await page.mouse.down({ button });
           await page.waitForTimeout(this.fast ? 0 : 70);
-          await page.mouse.up();
+          await page.mouse.up({ button });
         }
         for (const m of mods.reverse()) await page.keyboard.up(m);
         await this.wait(250);
@@ -161,7 +175,7 @@ class Ctx {
         break;
       }
       case "waitFor":
-        await page.locator(s.selector).first().waitFor({ state: s.state || "visible", timeout: s.timeout || 15_000 });
+        await this.loc(s.selector).waitFor({ state: s.state || "visible", timeout: s.timeout || 15_000 });
         break;
       case "type": {
         if (s.into) await this.run({ op: "click", selector: s.into });
@@ -201,7 +215,7 @@ class Ctx {
         const frames = this.fast ? 1 : Math.max(1, Math.round(s.duration / 16));
         const [dx, dy] = s.by;
         for (let i = 0; i < frames; i++) {
-          if (s.selector) await page.locator(s.selector).first().evaluate((el, d) => { el.scrollTop += d; }, dy / frames);
+          if (s.selector) await this.loc(s.selector).evaluate((el, d) => { (el.scrollingElement || el).scrollTop += d; }, dy / frames);
           else await page.mouse.wheel(dx / frames, dy / frames);
           if (!this.fast) await page.waitForTimeout(16);
         }

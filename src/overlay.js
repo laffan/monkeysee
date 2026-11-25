@@ -10,6 +10,9 @@
 // mouse is.
 (() => {
   if (window.__monkeysee) return;
+  // One overlay per window: pages shown in frames (an app's stand-in
+  // webviews) report their pointer to the top one through pointer().
+  if (window.top !== window) return;
   const opts = Object.assign(
     { hudTheme: "dark", cursor: true, accent: "#5b6cf0", font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif" },
     window.__monkeyseeOptions || {}
@@ -108,23 +111,27 @@
   }
 
   let idleTimer;
-  window.addEventListener("mousemove", (e) => {
+  function moved(x, y) {
     if (!opts.cursor) return;
     ensure();
     cursor.classList.remove("hidden");
-    cursor.style.transform = `translate(${e.clientX - 3}px, ${e.clientY - 2}px)`;
+    cursor.style.transform = `translate(${x - 3}px, ${y - 2}px)`;
     clearTimeout(idleTimer);
-  }, true);
-  window.addEventListener("mousedown", (e) => {
+  }
+  function pressed(x, y) {
     if (!opts.cursor) return;
     ensure();
     const r = document.createElement("div");
     r.className = "ripple";
-    r.style.left = e.clientX + "px";
-    r.style.top = e.clientY + "px";
+    r.style.left = x + "px";
+    r.style.top = y + "px";
     layer.appendChild(r);
     setTimeout(() => r.remove(), 600);
-  }, true);
+  }
+  window.addEventListener("mousemove", (e) => moved(e.clientX, e.clientY), true);
+  window.addEventListener("mousedown", (e) => pressed(e.clientX, e.clientY), true);
+  // Pointer events from a frame, in this window's coordinates.
+  const pointer = (type, x, y) => (type === "down" ? pressed(x, y) : moved(x, y));
   // Fade the cursor while typing so it doesn't sit on top of the text
   // (but not for a held modifier, which is usually part of a drag).
   const MODIFIERS = new Set(["Meta", "Control", "Alt", "Shift"]);
@@ -134,5 +141,5 @@
     idleTimer = setTimeout(() => cursor.classList.add("hidden"), 250);
   }, true);
 
-  window.__monkeysee = { showKeys, keyCaps };
+  window.__monkeysee = { showKeys, keyCaps, pointer };
 })();

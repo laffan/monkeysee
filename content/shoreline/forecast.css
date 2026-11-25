@@ -1,0 +1,12 @@
+body { margin: 0; background: #eef3f7; color: #15212c; font: 16px/1.5 Inter, sans-serif; }
+header.site { padding: 16px 48px; background: #12355b; color: #fff; font-weight: 700; font-size: 20px; }
+main { max-width: 860px; margin: 0 auto; padding: 28px 48px 80px; }
+h1 { font-size: 30px; margin: 0 0 6px; }
+.sub { color: #4b5d6c; margin: 0 0 22px; }
+.days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.day { background: #fff; border-radius: 12px; padding: 14px 16px; }
+.day b { display: block; font-size: 15px; }
+.day .t { font-size: 30px; font-weight: 700; color: #12355b; }
+.day .w { font-size: 14px; color: #4b5d6c; }
+.bar { height: 8px; border-radius: 4px; margin-top: 10px; background: linear-gradient(90deg, #2ec4b6, #ff9f1c); }
+p { margin: 22px 0 0; }

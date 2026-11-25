@@ -21,7 +21,7 @@ import YAML from "yaml";
 
 export const STEP_OPS = {
   wait: "pause in milliseconds",
-  click: "Playwright selector, [x, y] in viewport pixels, or {selector | at, double?, keys?}; the cursor glides there first",
+  click: "Playwright selector, [x, y] in viewport pixels, or {selector | at, double?, keys?, button?: right}; the cursor glides there first",
   move: "glide the cursor to a selector or [x, y] without clicking",
   drag: "{from, to, keys?, duration?}: press on `from`, glide to `to`, release; from/to are selectors or [x, y]; keys (e.g. Meta) are held through the drop and shown",
   type: "text typed at a human pace, or {text | content, paragraph?, words?, into?, wpm?}",

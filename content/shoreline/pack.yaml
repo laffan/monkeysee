@@ -1,0 +1,68 @@
+name: shoreline
+title: "Seaside web pages for browser demos: a whale encyclopedia, a tide-pool field guide, a local newspaper and a marine forecast"
+license: Original demo text and illustrations
+# Web pages for Snorkle (laffan/snorkle). Each item is one page: its
+# address, its site (stylesheet and favicon below) and its body as an HTML
+# fragment. Images (img/) are inlined when the page is built.
+sites:
+  whaleatlas:
+    css: whaleatlas.css
+    icon: { bg: "#0d2c4a", fg: "#5fd3e0", glyph: "W" }
+  tidepool:
+    css: tidepool.css
+    icon: { bg: "#ef476f", fg: "#ffd166", glyph: "T" }
+  gazette:
+    css: gazette.css
+    icon: { bg: "#111111", fg: "#ffffff", glyph: "G", serif: true }
+  forecast:
+    css: forecast.css
+    icon: { bg: "#12355b", fg: "#2ec4b6", glyph: "S" }
+items:
+  humpback:
+    title: "The humpback whale · The Whale Atlas"
+    url: https://whaleatlas.org/species/humpback
+    site: whaleatlas
+    kind: page
+    file: pages/humpback.html
+  song:
+    title: "Why humpbacks sing · The Whale Atlas"
+    url: https://whaleatlas.org/behaviour/song
+    site: whaleatlas
+    kind: page
+    file: pages/song.html
+  migration:
+    title: "The longest commute · The Whale Atlas"
+    url: https://whaleatlas.org/behaviour/migration
+    site: whaleatlas
+    kind: page
+    file: pages/migration.html
+  rocky-shore:
+    title: "Who lives in a tide pool? · Tide Pool Field Guide"
+    url: https://tidepoolguide.net/rocky-shore
+    site: tidepool
+    kind: page
+    file: pages/rocky-shore.html
+  logbooks-online:
+    title: "A century of lighthouse logbooks goes online"
+    url: https://harborgazette.com/coast/logbooks-online
+    site: gazette
+    kind: page
+    file: pages/logbooks-online.html
+  logbooks-storms:
+    title: "What the keepers wrote during the great storms"
+    url: https://harborgazette.com/coast/logbooks-storms
+    site: gazette
+    kind: page
+    file: pages/logbooks-storms.html
+  logbooks-families:
+    title: "The families who kept the light"
+    url: https://harborgazette.com/coast/logbooks-families
+    site: gazette
+    kind: page
+    file: pages/logbooks-families.html
+  forecast:
+    title: "Gull Point inshore forecast · Sea Forecast"
+    url: https://seaforecast.net/gull-point
+    site: forecast
+    kind: page
+    file: pages/forecast.html

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440">
+  <rect width="800" height="440" fill="#bfe6f2"/>
+  <path d="M0 0 L240 0 C 260 60, 230 120, 250 180 C 270 250, 220 330, 260 440 L0 440 Z" fill="#a7d39a"/>
+  <path d="M560 0 L800 0 L800 440 L640 440 C 600 360, 650 300, 610 230 C 580 170, 600 80, 560 0 Z" fill="#a7d39a"/>
+  <g fill="#8cbf7e"><circle cx="420" cy="380" r="22"/><circle cx="460" cy="400" r="14"/></g>
+  <path d="M300 60 C 360 140, 330 220, 400 280 C 440 314, 450 350, 440 380" stroke="#e4572e" stroke-width="6" fill="none" stroke-dasharray="14 10" stroke-linecap="round"/>
+  <circle cx="300" cy="60" r="12" fill="#e4572e"/><circle cx="440" cy="380" r="12" fill="#1d3557"/>
+  <text x="320" y="56" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#1d3557">Feeding grounds</text>
+  <text x="300" y="420" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#1d3557">Calving lagoons</text>
+</svg>

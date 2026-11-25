@@ -1,0 +1,18 @@
+body { margin: 0; background: #fff; color: #1a1a1a; font: 19px/1.6 "Bitstream Charter", Charter, Georgia, serif; }
+header.site { border-bottom: 1px solid #ddd; padding: 16px 48px 12px; text-align: center; }
+header.site .brand { font: 700 34px/1 "Bitstream Charter", serif; color: #111; text-decoration: none; letter-spacing: -.01em; }
+header.site nav { margin-top: 10px; font: 600 13px/1 Inter, sans-serif; text-transform: uppercase; letter-spacing: .06em; display: flex; justify-content: center; gap: 22px; }
+header.site nav a { color: #555; text-decoration: none; }
+main { max-width: 720px; margin: 0 auto; padding: 30px 48px 80px; }
+.section { font: 700 13px/1 Inter, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #b3261e; margin: 0 0 12px; }
+h1 { font-size: 42px; line-height: 1.12; margin: 0 0 12px; }
+.dek { font-size: 21px; color: #444; margin: 0 0 16px; }
+.byline { font: 14px/1.4 Inter, sans-serif; color: #666; margin: 0 0 22px; }
+figure { margin: 0 0 24px; }
+figure img { display: block; width: 100%; }
+figcaption { font: 13px/1.4 Inter, sans-serif; color: #777; margin-top: 6px; }
+p { margin: 0 0 18px; }
+a { color: #b3261e; }
+.series { margin: 30px 0 0; padding: 16px 18px; background: #f6f2ea; font: 15px/1.5 Inter, sans-serif; }
+.series b { display: block; margin-bottom: 6px; }
+.series a { display: block; color: #1a1a1a; }

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a2a6b"/>
+      <stop offset=".5" stop-color="#c2507a"/>
+      <stop offset="1" stop-color="#f7a65b"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff6c2" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#fff6c2" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="560" fill="url(#sky)"/>
+  <circle cx="300" cy="380" r="70" fill="#ffd27a"/>
+  <polygon points="760,150 1200,40 1200,250" fill="url(#beam)"/>
+  <path d="M0 400 L1200 400 L1200 560 L0 560 Z" fill="#2b3f73"/>
+  <g stroke="#f7c38b" stroke-width="4" opacity=".7"><line x1="230" y1="420" x2="370" y2="420"/><line x1="250" y1="440" x2="350" y2="440"/><line x1="270" y1="462" x2="330" y2="462"/></g>
+  <path d="M560 560 L600 380 C 640 360, 820 350, 900 400 L1000 560 Z" fill="#2a2433"/>
+  <g>
+    <polygon points="700,390 820,390 800,170 720,170" fill="#f4f1ea"/>
+    <polygon points="704,352 816,352 812,310 708,310" fill="#d2362e"/>
+    <polygon points="712,270 808,270 804,230 716,230" fill="#d2362e"/>
+    <rect x="712" y="140" width="96" height="30" fill="#2a2433"/>
+    <rect x="722" y="112" width="76" height="30" fill="#ffe680"/>
+    <path d="M716 112 L760 80 L804 112 Z" fill="#d2362e"/>
+    <rect x="748" y="340" width="24" height="40" fill="#2a2433"/>
+  </g>
+  <g fill="#fff" opacity=".9"><circle cx="120" cy="80" r="2"/><circle cx="420" cy="60" r="2"/><circle cx="560" cy="120" r="1.6"/><circle cx="960" cy="300" r="1.6"/></g>
+</svg>
