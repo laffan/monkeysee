@@ -30,7 +30,10 @@ export async function startRecording(page, { output, fps = 30, width, height, sc
   const cdp = await page.context().newCDPSession(page);
   let latest = null;
   cdp.on("Page.screencastFrame", async ({ data, sessionId }) => {
-    latest = Buffer.from(data, "base64");
+    // A region picture the app asked for (browser.mjs, __monkeyseeShot)
+    // can come through the screencast as a frame of its own: skip frames
+    // while one is being taken.
+    if (!page.__monkeyseeShooting) latest = Buffer.from(data, "base64");
     try { await cdp.send("Page.screencastFrameAck", { sessionId }); } catch { /* page closing */ }
   });
   await cdp.send("Page.startScreencast", { format: "jpeg", quality, maxWidth: W, maxHeight: H, everyNthFrame: 1 });

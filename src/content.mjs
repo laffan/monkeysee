@@ -48,7 +48,13 @@ export function loadItem(ref) {
     if (src.endsWith(".json")) data = JSON.parse(raw);
     else text = raw;
   }
-  return { pack: packName, item: itemName, title: item.title || itemName, kind: item.kind || "document", folder: item.in || null, proofread: !!item.proofread, text, data };
+  // url and site: a web page's address and the pack's site it belongs to
+  // (packs of pages for a browser, such as shoreline).
+  return {
+    pack: packName, item: itemName, title: item.title || itemName, kind: item.kind || "document", folder: item.in || null,
+    proofread: !!item.proofread, text, data,
+    url: item.url ?? null, site: item.site ?? null, dir: pack.dir,
+  };
 }
 
 function splitRef(ref) {

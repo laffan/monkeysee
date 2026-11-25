@@ -20,7 +20,7 @@ export async function withApp(script, { appDir, headless = true } = {}, fn) {
   const server = await ensureServer(app, { appDir });
   const browser = await launch({ headless, viewport: script.viewport, scale: script.scale });
   try {
-    const { page } = await openApp(browser, app, script, { content });
+    const { page } = await openApp(browser, app, script, { content, appDir });
     return await fn({ app, page, content });
   } finally {
     await browser.close().catch(() => {});

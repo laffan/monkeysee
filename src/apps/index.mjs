@@ -3,8 +3,9 @@
 // guide to its selectors and shortcuts. See docs/DESIGN.md ("Adapters").
 import hush from "./hush.mjs";
 import fixture from "./fixture.mjs";
+import snorkle from "./snorkle.mjs";
 
-const apps = { hush, fixture };
+const apps = { hush, snorkle, fixture };
 
 export function getApp(name) {
   const app = apps[name];

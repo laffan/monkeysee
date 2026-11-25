@@ -24,7 +24,7 @@ export async function launch({ headless = true, viewport, scale = 1 } = {}) {
 }
 
 /** Opens the app in a fresh context: overlay, platform spoof, Tauri mock and seeded content. */
-export async function openApp(browser, app, script, { content = [] } = {}) {
+export async function openApp(browser, app, script, { content = [], appDir } = {}) {
   const { width, height } = script.viewport;
   const mac = (script.platform || app.platform || "mac") === "mac";
   const context = await browser.newContext({
@@ -49,6 +49,29 @@ export async function openApp(browser, app, script, { content = [] } = {}) {
       });
     }
   }
+  // An adapter can put its own stand-in for the native side in the page
+  // (init), and ask for pictures of a region of the window (as a native
+  // webview snapshot would give it).
+  if (app.init) {
+    const dir = appDir || process.env[`MONKEYSEE_${app.name.toUpperCase().replace(/\W/g, "_")}_DIR`] || app.server?.cwd;
+    await context.addInitScript({ content: app.init(content, script.appOptions || {}, { appDir: dir }) });
+  }
+  let page;
+  await context.exposeFunction("__monkeyseeShot", async ({ x, y, w, h }) => {
+    const clip = { x: Math.max(0, x), y: Math.max(0, y), width: Math.max(1, w), height: Math.max(1, h) };
+    // Without the recording's own cursor and key HUD in the picture.
+    const overlay = (on) => page.evaluate((v) => document.querySelectorAll("monkeysee-overlay").forEach((e) => { e.style.visibility = v; }), on ? "" : "hidden").catch(() => {});
+    page.__monkeyseeShooting = true;
+    await overlay(false);
+    let buf;
+    try {
+      buf = await page.screenshot({ clip, type: "jpeg", quality: 85, scale: "css", animations: "allow" });
+    } finally {
+      await overlay(true);
+      setTimeout(() => { page.__monkeyseeShooting = false; }, 120);
+    }
+    return `data:image/jpeg;base64,${buf.toString("base64")}`;
+  });
   if (app.seed) {
     const seed = app.seed(content, script.appOptions || {});
     if (seed) await context.addInitScript(seed.fn, seed.arg);
@@ -56,7 +79,7 @@ export async function openApp(browser, app, script, { content = [] } = {}) {
   await context.addInitScript((o) => { window.__monkeyseeOptions = o; }, script.overlay);
   await context.addInitScript({ content: OVERLAY });
 
-  const page = await context.newPage();
+  page = await context.newPage();
   page.on("pageerror", (e) => process.env.MONKEYSEE_DEBUG && console.warn("[page error]", e.message));
   await page.goto(app.url, { waitUntil: "load" });
   if (app.ready) await app.ready(page);

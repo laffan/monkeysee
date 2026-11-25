@@ -1,0 +1,40 @@
+feature: notebook
+state: the humpback page open beside an empty notebook; two more whale and tide-pool tabs in the sidebar
+description:
+  - turn on the scissors and drag a box over the bubble-net diagram; Clip puts it in the notebook
+  - hold Option and click the whale picture; it goes straight into the notebook
+  - drag the quote button onto a sentence on the page; the sentence lands in the notebook as a linked quote
+
+content: [shoreline/*]
+appOptions:
+  tabs:
+    - https://whaleatlas.org/species/humpback
+    - https://whaleatlas.org/behaviour/song
+    - https://tidepoolguide.net/rocky-shore
+  active: 0
+  notebookOpen: true
+setup:
+  - waitFor: "page: h1:has-text(\"The humpback whale\")"
+  - scroll: {selector: "page: html", by: [0, 0]}
+steps:
+  - wait: 800
+  - click: .notepad-clip-btn
+    note: the scissors
+  - wait: 700
+  - scroll: {at: "page: h2:has-text(\"Feeding together\")", by: [0, 420], duration: 700}
+  - drag: {from: [322, 170], to: [842, 448], duration: 900}
+    note: drag a box over the diagram
+  - wait: 600
+  - click: "page: [role=button]:has-text(\"Clip\")"
+  - wait: 1400
+  - move: [1180, 120]
+    note: park the cursor
+  - scroll: {at: "page: h2:has-text(\"Feeding together\")", by: [0, -900], duration: 800}
+  - click: {selector: "page: img[alt^=\"A humpback\"]", keys: Alt}
+    note: Option-click clips an image at once
+  - wait: 1400
+  - drag: {from: .notepad-quote-btn, to: [600, 216], duration: 1400}
+    note: drag the quote button onto a sentence
+  - wait: 1600
+  - move: [1180, 120]
+  - wait: 800

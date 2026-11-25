@@ -1,0 +1,37 @@
+feature: research-sessions
+state: everyday tabs, among them three whale pages, sidebar showing
+description:
+  - choose the two behaviour tabs and send them to a new research session
+  - name it; the session has its own tabs and its own notebook
+  - go back to everyday tabs, then return to the session from its row
+
+content: [shoreline/*]
+appOptions:
+  tabs:
+    - https://seaforecast.net/gull-point
+    - https://whaleatlas.org/species/humpback
+    - https://whaleatlas.org/behaviour/song
+    - https://whaleatlas.org/behaviour/migration
+    - https://harborgazette.com/coast/logbooks-online
+  active: 1
+steps:
+  - wait: 1000
+  - click: {selector: "#tabs .tab:has-text(\"Why humpbacks sing\")", keys: Meta}
+  - click: {selector: "#tabs .tab:has-text(\"The longest commute\")", keys: Meta}
+    note: choose two tabs
+  - wait: 600
+  - click: {selector: "#tabs .tab:has-text(\"The longest commute\")", button: right}
+  - wait: 600
+  - click: "text=New Research Session"
+  - wait: 1200
+  - type: {text: "Whale migration"}
+  - press: Enter
+  - wait: 2400
+    note: the session opens with its own notebook
+  - click: .rs-back
+    note: back to everyday tabs
+  - wait: 1500
+  - click: ".rs-row:has-text(\"Whale migration\") .open"
+  - wait: 1600
+  - move: [1180, 120]
+  - wait: 800
