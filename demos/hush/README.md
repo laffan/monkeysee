@@ -15,14 +15,12 @@ notebook of research.
 | 2 | `02-campfire.yml` | Campfire Cursor: a glow around the caret | Command × 3 |
 | 3 | `03-typewriter.yml` | Typewriter scrolling on the opening of Moby-Dick | ⌘⇧T |
 | 4 | `04-private.yml` | Private Mode blacks out every word, for writing in public | ⌘⇧P |
-| 5 | `05-sentences.yml` | Jump, select and move by sentence | ⌘→ ⌘← ⌘L ⌥⌘→ ⌥⌘← |
+| 5 | `05-writing-shortcuts.yml` | Writing shortcuts: jump and select by sentence, move a sentence through its paragraph, move lines, select a word and jump to its next use, fold sections | ⌘→ ⌘← ⌘L ⌥⌘→ ⌥⌘←, ⌥↑, ⌘D, ⌘P |
 | 6 | `06-shuffle.yml` | The Shuffle Editor: sentences as cards, reorder, compare, keep | ⌘⇧↓, ⌘⇧E |
-| 7 | `07-lines.yml` | Move lines with the keyboard; bold and highlight | ⌥↑, ⌘B, ⌘= |
-| 8 | `08-folding.yml` | Fold every section into an outline, open one | ⌘P |
-| 9 | `09-cards.yml` | Make margin cards, drag one onto another section and one onto the Inbox (a CARDS notebook appears), then drag it from the sidebar into a new document | ⌘L, ⌘⇧,, ⌘N |
-| 10 | `10-courier.yml` | Courier: send a note to the end of another document | Shift × 3, ⌘↩ |
-| 11 | `11-write-now.yml` | Write Now: a blank page from anywhere | Option × 3 |
-| 12 | `12-panes.yml` | Panes: drag a section and the notebook out of the sidebar, dock them, drag a note into the text | ⌘ held while dragging |
+| 7 | `07-cards.yml` | Make margin cards, drag one onto another section and one onto the Inbox (a CARDS notebook appears), then drag it from the sidebar into a new document | ⌘L, ⌘⇧,, ⌘N |
+| 8 | `08-courier.yml` | Courier: send a note to the end of another document | Shift × 3, ⌘↩ |
+| 9 | `09-write-now.yml` | Write Now: a blank page from anywhere | Option × 3 |
+| 10 | `10-panes.yml` | Panes: drag a section and the notebook out of the sidebar, dock them, drag a note into the text | ⌘ held while dragging |
 
 Record one with `node src/cli.mjs record demos/hush/06-shuffle.yml`, or
 all of them with a loop over `demos/hush/*.yml`. Each writes

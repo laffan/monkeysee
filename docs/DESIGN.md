@@ -91,7 +91,7 @@ can be read and edited:
    writes the script, runs `monkeysee check` (setup and steps fast, no
    video) until it passes, then `monkeysee record` and looks at frames.
    CLAUDE.md tells it how.
-2. **`monkeysee plan demos/hush/15-panes.yml`.** The same loop through the
+2. **`monkeysee plan demos/hush/10-panes.yml`.** The same loop through the
    Claude API: the model gets the file format, the adapter's guide, the
    content packs, a screenshot and element list of the app at launch, and
    the spec; it answers with YAML, which is validated and dry-run against

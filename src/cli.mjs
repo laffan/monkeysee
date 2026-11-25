@@ -67,7 +67,7 @@ const commands = {
   },
 
   async plan(file) {
-    if (!file) usage("plan needs a spec file, e.g. plan demos/hush/15-panes.yml");
+    if (!file) usage("plan needs a spec file, e.g. plan demos/hush/10-panes.yml");
     const spec = loadScript(file, { spec: true });
     if (!spec.description.length) usage(`${file} has no description: list the clip's beats under description:`);
     const { plan } = await import("./planner.mjs");
