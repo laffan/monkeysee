@@ -89,7 +89,7 @@ can be read and edited:
    writes the script, runs `monkeysee check` (setup and steps fast, no
    video) until it passes, then `monkeysee record` and looks at frames.
    CLAUDE.md tells it how.
-2. **`monkeysee plan demos/hush/panes.yml`.** The same loop through the
+2. **`monkeysee plan demos/hush/15-panes.yml`.** The same loop through the
    Claude API: the model gets the file format, the adapter's guide, the
    content packs, a screenshot and element list of the app at launch, and
    the spec; it answers with YAML, which is validated and dry-run against
@@ -108,8 +108,8 @@ still need a look.
 Working: the Hush adapter with the full app (notebooks, panes) on a fake
 backend, a fixture app for testing without any of your repos, the overlay,
 recording to mp4/webm/gif at 2x, the `check` and `inspect` commands, the
-Moby-Dick, Pequod and whaling-library packs, and the clips
-`demos/hush/panes.yml` and `demos/hush/focus.yml`.
+Moby-Dick, Pequod and whaling-library packs, and the
+fifteen-clip Hush series in `demos/hush/` (see its README).
 
 Not yet tried: the `plan` command against the API (written to the current
 SDK, never run here); adapters for Zotero Helper and Snorkle.

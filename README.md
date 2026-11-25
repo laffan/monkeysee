@@ -5,7 +5,7 @@ shortcuts and themed demo content. Describe a clip in a small YAML file,
 have a model script it, and monkeysee records it to mp4, webm or gif.
 
 ```yaml
-# demos/hush/panes.yml
+# demos/hush/15-panes.yml
 feature: panes
 state: left sidebar open, ten demo text and notebook files
 description:
@@ -41,9 +41,9 @@ running at the adapter's URL, it is reused.
 ## Commands
 
 ```sh
-monkeysee plan   demos/hush/panes.yml       # script a spec (needs ANTHROPIC_API_KEY)
-monkeysee check  demos/hush/panes.yml       # run setup and steps fast, no video
-monkeysee record demos/hush/panes.yml       # render the clip to out/hush-panes.mp4
+monkeysee plan   demos/hush/15-panes.yml       # script a spec (needs ANTHROPIC_API_KEY)
+monkeysee check  demos/hush/15-panes.yml       # run setup and steps fast, no video
+monkeysee record demos/hush/15-panes.yml       # render the clip to out/hush-panes.mp4
 monkeysee inspect --app hush                # screenshot + selectors of the starting screen
 monkeysee fetch-content                     # full public-domain texts for the packs
 monkeysee apps | packs

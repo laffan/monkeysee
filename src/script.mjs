@@ -21,8 +21,8 @@ import YAML from "yaml";
 
 export const STEP_OPS = {
   wait: "pause in milliseconds",
-  click: "Playwright selector, or {selector, double?}; the cursor glides there first",
-  move: "glide the cursor to a selector without clicking",
+  click: "Playwright selector, [x, y] in viewport pixels, or {selector | at, double?}; the cursor glides there first",
+  move: "glide the cursor to a selector or [x, y] without clicking",
   drag: "{from, to, keys?, duration?}: press on `from`, glide to `to`, release; from/to are selectors or [x, y]; keys (e.g. Meta) are held through the drop and shown",
   type: "text typed at a human pace, or {text | content, paragraph?, words?, into?, wpm?}",
   paste: "text inserted at once (the HUD shows ⌘V), or {text | content, paragraph?, words?, into?}",
@@ -147,8 +147,9 @@ function normalizeStep(step, i, errors, list) {
     case "move":
     case "waitFor":
       if (typeof v === "string") s.selector = v;
+      else if (Array.isArray(v)) s.at = v;
       else Object.assign(s, v);
-      need(typeof s.selector === "string" && s.selector, "needs a selector");
+      if (op === "waitFor" || !point(s.at)) need(typeof s.selector === "string" && s.selector, op === "waitFor" ? "needs a selector" : "needs a selector or [x, y]");
       break;
     case "drag":
       Object.assign(s, v);

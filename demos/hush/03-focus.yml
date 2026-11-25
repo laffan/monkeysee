@@ -1,0 +1,31 @@
+feature: focus
+state: the essay open, sidebar closed, caret at the end
+description:
+  - turn on Focus Mode; only the current sentence stays lit
+  - keep writing; the lit sentence follows the caret
+  - show the word count, then turn both off
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [pequod/*]
+setup:
+  - press: Meta+Backslash
+  - click: "text=The Crew as a Machine"
+  - press: Meta+Backslash
+  - waitFor: ".cm-line:has-text(\"Ishmael is the exception\")"
+  - click: ".cm-line:has-text(\"Ishmael is the exception\")"
+  - press: Meta+End
+  - press: Backspace
+steps:
+  - press: Meta+S
+    note: turn on Focus Mode
+  - wait: 1500
+  - type: " He signs on for the money. He stays for the telling."
+    note: keep writing
+  - wait: 1200
+  - press: Meta+Shift+W
+    note: show the word count
+  - wait: 1800
+  - press: Meta+Shift+W
+  - wait: 400
+  - press: Meta+S
+  - wait: 1200

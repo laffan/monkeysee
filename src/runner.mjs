@@ -97,10 +97,12 @@ class Ctx {
         await this.wait(s.ms);
         break;
       case "move":
-        await this.glideTo(s.selector);
+        if (s.at) await this.glide(...s.at);
+        else await this.glideTo(s.selector);
         break;
       case "click": {
-        await this.glideTo(s.selector);
+        if (s.at) await this.glide(...s.at);
+        else await this.glideTo(s.selector);
         await this.wait(120);
         if (s.double) {
           await page.mouse.dblclick(this.mouse.x, this.mouse.y, { delay: this.fast ? 0 : 60 });
@@ -151,16 +153,18 @@ class Ctx {
         break;
       }
       case "press": {
-        if (s.silent) { // setup keys the viewer needn't see
+        if (s.silent || s.list === "setup") { // keys the viewer needn't see
           for (let i = 0; i < s.times; i++) await page.keyboard.press(s.keys);
           await this.wait(120);
           break;
         }
         for (let i = 0; i < s.times; i++) {
           await this.overlay("showKeys", s.keys, "", s.hold || 1500);
-          await this.wait(s.times > 1 ? 120 : 220); // let the viewer see the keys land first
+          // Repeats are quick, so that tapping a key twice or three times
+          // (Hush's ⌘⌘ and ⇧⇧⇧ gestures) lands inside an app's tap window.
+          await this.wait(s.times > 1 ? 60 : 220); // let the viewer see the keys land first
           await page.keyboard.press(s.keys);
-          await this.wait(s.times > 1 ? 220 : 500);
+          await this.wait(s.times > 1 ? 140 : 500);
         }
         break;
       }
