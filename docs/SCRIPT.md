@@ -64,7 +64,7 @@ scripts put the beat's words in the note of its first step.
 | `drag` | | `{from, to, keys, duration: 900}` | Presses on `from`, glides to `to`, releases; each is a selector or `[x, y]`. `keys` (e.g. `Meta`) are held through the drop and shown in the HUD |
 | `type` | `type: "text"` | `{text \| content, paragraph, words, into, wpm}` | Types at a human pace (rhythm is the same on every render) |
 | `paste` | `paste: "text"` | `{text \| content, paragraph, words, into}` | Inserts text at once; the HUD shows ⌘V |
-| `press` | `press: Meta+S` | `{keys, times, hold, silent}` | Shows the keys in the HUD, then presses them; `silent: true` presses without showing (presses in `setup` never show). With `times`, repeats are quick taps, so `{keys: Shift, times: 3}` works as a triple tap |
+| `press` | `press: Meta+S` | `{keys, times, hold, silent}` | Shows the keys in the HUD, then presses them; `silent: true` presses without showing (presses in `setup` never show). With `times`, repeats are quick taps, so `{keys: Shift, times: 3}` works as a triple tap; the HUD counts the taps, and a modifier tapped on its own is spelled out ("Shift × 3") |
 | `scroll` | `scroll: 400` | `{by: px or [dx, dy], at, selector, duration: 900}` | Smooth mouse-wheel scroll with the cursor over `at` (or where it is); `selector` sets that element's scrollTop instead |
 | `waitFor` | `waitFor: <selector>` | `{selector, state, timeout}` | Waits for an element without showing anything |
 | `eval` | `eval: "js"` | | Runs JavaScript in the page; hand-written scripts only |

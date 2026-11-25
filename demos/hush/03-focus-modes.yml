@@ -1,9 +1,10 @@
-feature: zen
+feature: focus-modes
 state: the "Ishmael outside" section open from the chapter project, caret at the end, sidebar open
 description:
+  - turn on Focus Mode; only the current sentence stays lit
+  - keep writing; the lit sentence follows the caret, then turn it off
   - enter Zen Focus; the line being written sits in the middle of the screen
-  - write two sentences
-  - leave Zen Focus
+  - write a sentence, then leave Zen Focus
 
 # Script (written from the spec above; edit freely) ------------------------
 content: [pequod/*]
@@ -15,11 +16,20 @@ setup:
   - press: Meta+End
   - press: Backspace
 steps:
+  - press: Meta+S
+    note: turn on Focus Mode
+  - wait: 1500
+  - type: " He signs on for the money."
+    note: keep writing; the lit sentence follows the caret
+  - wait: 1200
+  - press: Meta+S
+    note: turn Focus Mode off
+  - wait: 1000
   - press: Meta+Shift+S
     note: enter Zen Focus
   - wait: 1800
-  - type: " He signs on for the money. He stays for the telling."
-    note: write two sentences
+  - type: " He stays for the telling."
+    note: write a sentence
   - wait: 1500
   - press: Meta+Shift+S
     note: leave Zen Focus

@@ -24,12 +24,13 @@
       backdrop-filter: blur(10px); transition: opacity .18s ease, transform .18s ease; }
     .hud.light { background: rgba(255,255,255,.92); color: #16161c; box-shadow: 0 12px 40px rgba(0,0,0,.16); }
     .hud.show { opacity: 1; transform: translate(-50%, 0); }
-    .keys { display: flex; gap: 6px; }
+    .keys { display: flex; align-items: center; gap: 6px; }
     .cap { min-width: 34px; height: 38px; padding: 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
       border-radius: 9px; font-size: 20px; font-weight: 600; background: rgba(255,255,255,.12);
       box-shadow: inset 0 -2px 0 rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.14); }
     .hud.light .cap { background: #f1f1f4; box-shadow: inset 0 -2px 0 rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.08); }
     .cap.pop { animation: pop .22s ease; }
+    .times { font-size: 20px; font-weight: 600; opacity: .85; min-width: 2.4em; }
     @keyframes pop { 0% { transform: scale(.82); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
     .cursor { position: absolute; left: 0; top: 0; width: 26px; height: 26px; transform: translate(-100px,-100px);
       transition: opacity .3s ease; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
@@ -45,6 +46,10 @@
     ArrowUp: "↑", ArrowDown: "↓", ArrowLeft: "←", ArrowRight: "→", PageUp: "⇞", PageDown: "⇟", Home: "↖", End: "↘",
     Backslash: "\\", Slash: "/", Period: ".", Comma: ",", Semicolon: ";", Minus: "-", Equal: "=",
   };
+  // A modifier tapped on its own (Hush's triple-tap gestures) is spelled
+  // out, since a lone ⇧ or ⌘ cap is easy to miss.
+  const WORDS = { Meta: "Command", Command: "Command", Cmd: "Command", Control: "Control", Ctrl: "Control",
+    Alt: "Option", Option: "Option", Shift: "Shift" };
   // macOS order: ⌃ ⌥ ⇧ ⌘ then the key.
   const MOD_ORDER = ["Control", "Ctrl", "Alt", "Option", "Shift", "Meta", "Command", "Cmd"];
 
@@ -76,15 +81,26 @@
   setInterval(ensure, 500);
 
   let hudTimer;
-  function showKeys(combo, _unused, holdMs = 1400) {
+  // count: for a key tapped several times, which tap this is (1, 2, 3…);
+  // the HUD then reads e.g. "Shift × 3", counting up as the taps land.
+  function showKeys(combo, count, holdMs = 1400) {
     ensure();
     const keys = hud.querySelector(".keys");
+    const n = Number(count) || 0;
+    const lone = WORDS[String(combo)];
+    const caps = n && lone ? [lone] : keyCaps(combo);
     keys.innerHTML = "";
-    for (const k of keyCaps(combo)) {
+    for (const k of caps) {
       const el = document.createElement("div");
       el.className = "cap pop";
       el.textContent = k;
       keys.appendChild(el);
+    }
+    if (n) {
+      const t = document.createElement("div");
+      t.className = "times";
+      t.textContent = `× ${n}`;
+      keys.appendChild(t);
     }
     hud.classList.add("show");
     clearTimeout(hudTimer);

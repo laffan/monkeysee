@@ -13,8 +13,8 @@ notebook of research.
 | # | File | What it shows | Keys on screen |
 |---|------|---------------|----------------|
 | 2 | `02-palette.yml` | The command palette: browse it, switch style, turn on Midnight | ⌘P |
-| 3 | `03-focus.yml` | Focus Mode lights only the current sentence; word count | ⌘S, ⌘⇧W |
-| 4 | `04-zen.yml` | Zen Focus keeps the line you write mid-screen | ⌘⇧S |
+| 3 | `03-focus-modes.yml` | Focus Mode lights only the current sentence; Zen Focus keeps the line you write mid-screen | ⌘S, ⌘⇧S |
+| 4 | `04-campfire.yml` | Campfire Cursor: a glow around the caret | Command × 3 |
 | 5 | `05-typewriter.yml` | Typewriter scrolling on the opening of Moby-Dick | ⌘⇧T |
 | 6 | `06-private.yml` | Private Mode blacks out every word, for writing in public | ⌘⇧P |
 | 7 | `07-sentences.yml` | Jump, select and move by sentence | ⌘→ ⌘← ⌘L ⌥⌘→ ⌥⌘← |
@@ -22,10 +22,9 @@ notebook of research.
 | 9 | `09-lines.yml` | Move lines with the keyboard; bold and highlight | ⌥↑, ⌘B, ⌘= |
 | 10 | `10-folding.yml` | Fold every section into an outline, open one | ⌘P |
 | 11 | `11-cards.yml` | Turn a sentence into a margin card that rides with its line | ⌘L, ⌘⇧, |
-| 12 | `12-courier.yml` | Courier: send a note to the end of another document | ⇧⇧⇧, ⌘↩ |
-| 13 | `13-campfire.yml` | Campfire Cursor: a glow around the caret | ⌘⌘⌘ |
-| 14 | `14-write-now.yml` | Write Now: a blank page from anywhere | ⌥⌥⌥ |
-| 15 | `15-panes.yml` | Panes: drag a section and the notebook out of the sidebar, dock them, drag a note into the text | ⌘ held while dragging |
+| 12 | `12-courier.yml` | Courier: send a note to the end of another document | Shift × 3, ⌘↩ |
+| 13 | `13-write-now.yml` | Write Now: a blank page from anywhere | Option × 3 |
+| 14 | `14-panes.yml` | Panes: drag a section and the notebook out of the sidebar, dock them, drag a note into the text | ⌘ held while dragging |
 
 Record one with `node src/cli.mjs record demos/hush/08-shuffle.yml`, or
 all of them with a loop over `demos/hush/*.yml`. Each writes

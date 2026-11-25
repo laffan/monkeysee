@@ -164,7 +164,7 @@ class Ctx {
           break;
         }
         for (let i = 0; i < s.times; i++) {
-          await this.overlay("showKeys", s.keys, "", s.hold || 1500);
+          await this.overlay("showKeys", s.keys, s.times > 1 ? i + 1 : 0, s.hold || 1500);
           // Repeats are quick, so that tapping a key twice or three times
           // (Hush's ⌘⌘ and ⇧⇧⇧ gestures) lands inside an app's tap window.
           await this.wait(s.times > 1 ? 60 : 220); // let the viewer see the keys land first
