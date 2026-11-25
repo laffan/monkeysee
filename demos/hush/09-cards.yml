@@ -1,0 +1,45 @@
+feature: cards
+state: the "Starbuck's bind" section open from the chapter project, sidebar open
+description:
+  - turn a sentence into a margin card, then drag the card onto another section in the sidebar
+  - turn a second sentence into a card and drag it onto the Inbox; a CARDS notebook appears there
+  - open a new document and drag that card in from the sidebar
+
+# Script (written from the spec above; edit freely) ------------------------
+content: [pequod/*]
+setup:
+  - press: Meta+Backslash
+  - click: "text=\"Starbuck's bind\""
+  - waitFor: ".cm-line:has-text(\"Starbuck sees the danger\")"
+  - click: ".cm-line:has-text(\"Starbuck sees the danger\")"
+steps:
+  - press: Meta+L
+    note: select a sentence
+  - wait: 700
+  - press: Meta+Shift+Comma
+    note: turn it into a margin card
+  - wait: 1600
+  - drag: { from: ".hush-card-doc .hush-card-header", to: "#panel-overlay >> text=\"The engine\"", duration: 1300 }
+    note: drag the card onto another section in the sidebar
+  - wait: 1500
+  - click: ".cm-line:has-text(\"He has a wife\")"
+  - press: Meta+L
+    note: select a second sentence
+  - wait: 700
+  - press: Meta+Shift+Comma
+    note: turn it into a card
+  - wait: 1600
+  - drag: { from: ".hush-card-doc .hush-card-header", to: "#panel-overlay .sl-item[data-id^=\"__inbox__\"] > .sl-item-content", duration: 1300 }
+    note: drag it onto the Inbox; a CARDS notebook is made there
+  - wait: 1800
+  - press: Meta+N
+    note: open a new document
+  - wait: 1200
+  - type: "Starbuck at home"
+  - wait: 800
+  - click: "#panel-overlay .sl-item.cards-home > .sl-item-content .sl-fold-arrow"
+    note: open the CARDS notebook in the sidebar to see its cards
+  - wait: 1000
+  - drag: { from: "#panel-overlay .sl-item.cards-home .sl-item >> text=/He has a wife/", to: [760, 92], duration: 1300 }
+    note: drag the card in from the sidebar
+  - wait: 2000
