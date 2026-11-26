@@ -5,14 +5,14 @@
   "type": "module",
   "private": true,
   "bin": {
-    "monkeysee": "src/cli.mjs"
+    "monkeysee": "agent-mode/src/cli.mjs"
   },
   "scripts": {
-    "record": "node src/cli.mjs record",
-    "plan": "node src/cli.mjs plan",
-    "inspect": "node src/cli.mjs inspect",
-    "check": "node src/cli.mjs check",
-    "content:fetch": "node src/cli.mjs fetch-content"
+    "record": "node agent-mode/src/cli.mjs record",
+    "plan": "node agent-mode/src/cli.mjs plan",
+    "inspect": "node agent-mode/src/cli.mjs inspect",
+    "check": "node agent-mode/src/cli.mjs check",
+    "content:fetch": "node agent-mode/src/cli.mjs fetch-content"
   },
   "engines": {
     "node": ">=20"
@@ -23,14 +23,15 @@
     "yaml": "2.6.1"
   },
   "exports": {
-    ".": "./src/index.mjs",
+    ".": "./agent-mode/src/index.mjs",
     "./package.json": "./package.json"
   },
   "files": [
-    "src",
-    "content",
-    "fixtures",
-    "docs",
+    "agent-mode/src",
+    "agent-mode/content",
+    "agent-mode/fixtures",
+    "agent-mode/docs",
+    "agent-mode/README.md",
     "README.md"
   ]
 }

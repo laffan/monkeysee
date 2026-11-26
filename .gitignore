@@ -3,3 +3,10 @@ out/
 *.log
 .env
 content/**/*.full.md
+agent-mode/content/**/*.full.md
+
+# manual-mode (Xcode)
+manual-mode/**/xcuserdata/
+manual-mode/**/DerivedData/
+manual-mode/build/
+.DS_Store
