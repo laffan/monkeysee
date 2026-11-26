@@ -167,11 +167,18 @@ class Ctx {
         const to = await this.pointOf(s.to, { aim: "centre" });
         await this.glide(from.x, from.y);
         await this.wait(150);
+        const mods = s.keys ? String(s.keys).split("+").filter(Boolean) : [];
+        // `keysFirst`: the keys go down before the press, for gestures that
+        // read them on mousedown (Cmd-drag to select, Space-drag to pan).
+        if (s.keysFirst && mods.length) {
+          await this.overlay("showKeys", s.keys, "", s.duration + 1600);
+          for (const m of mods) await page.keyboard.down(m);
+          await this.wait(150);
+        }
         await page.mouse.down();
         // `hold`: a press-and-hold that has to stay still before it moves
         // (a long-press that starts a selection, say).
         await this.wait(s.hold ?? 180);
-        const mods = s.keys ? String(s.keys).split("+").filter(Boolean) : [];
         // Nudge first so drag thresholds trip before the long move. A pen
         // stroke (nudge: false) starts where it was asked to.
         // `nudge: [dx, dy]` sets the direction (a pull that must start upward).
@@ -179,8 +186,10 @@ class Ctx {
           const [nx, ny] = Array.isArray(s.nudge) ? s.nudge : [12, 6];
           await this.glide(from.x + nx, from.y + ny, 120);
         }
-        if (mods.length) await this.overlay("showKeys", s.keys, "", s.duration + 1200);
-        for (const m of mods) await page.keyboard.down(m);
+        if (mods.length && !s.keysFirst) {
+          await this.overlay("showKeys", s.keys, "", s.duration + 1200);
+          for (const m of mods) await page.keyboard.down(m);
+        }
         // `via` points turn the drag into a path (a pen mark, say); the
         // duration is shared out by length.
         const pts = [...(s.via || []), [to.x, to.y]];
