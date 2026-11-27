@@ -104,6 +104,7 @@ MonkeySee/
   TrimWindowController.swift      AVPlayerView trimming and saving
   WindowTargeter.swift            target mode (Accessibility API)
   Permissions.swift, Geometry.swift
+  Assets.xcassets/AppIcon         the app icon, resized from ../app-icon.jpg
 ```
 
 The project uses a synchronized folder (Xcode 16): any Swift file added to

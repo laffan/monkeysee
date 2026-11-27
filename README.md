@@ -1,3 +1,5 @@
+<img src="manual-mode/MonkeySee/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png" width="128" alt="monkeysee icon">
+
 # monkeysee
 
 Short feature clips of apps, for their pages on tools.natelaffan.com.
