@@ -27,6 +27,8 @@ final class AppModel: ObservableObject {
     @Published var selectedProjectID: UUID? { didSet { save() } }
     @Published var countdownSeconds: Int { didSet { save() } }
     @Published var outputFolder: URL { didSet { save() } }
+    /// Show pressed keys in the clip, like agent mode's HUD.
+    @Published var showKeystrokes: Bool { didSet { save() } }
 
     @Published var phase: Phase = .idle
     @Published var activeFeatureID: UUID?
@@ -42,6 +44,7 @@ final class AppModel: ObservableObject {
         var selectedProjectID: UUID?
         var countdownSeconds: Int
         var outputFolder: String
+        var showKeystrokes: Bool?
     }
 
     private static let defaultsKey = "monkeysee.state.v1"
@@ -60,12 +63,14 @@ final class AppModel: ObservableObject {
             selectedProjectID = stored.selectedProjectID ?? stored.projects.first?.id
             countdownSeconds = stored.countdownSeconds
             outputFolder = URL(fileURLWithPath: stored.outputFolder, isDirectory: true)
+            showKeystrokes = stored.showKeystrokes ?? true
         } else {
             let first = Project(name: "My app")
             projects = [first]
             selectedProjectID = first.id
             countdownSeconds = 3
             outputFolder = Self.defaultOutputFolder
+            showKeystrokes = true
         }
     }
 
@@ -73,7 +78,8 @@ final class AppModel: ObservableObject {
         let stored = Stored(projects: projects,
                             selectedProjectID: selectedProjectID,
                             countdownSeconds: countdownSeconds,
-                            outputFolder: outputFolder.path)
+                            outputFolder: outputFolder.path,
+                            showKeystrokes: showKeystrokes)
         if let data = try? JSONEncoder().encode(stored) {
             UserDefaults.standard.set(data, forKey: Self.defaultsKey)
         }

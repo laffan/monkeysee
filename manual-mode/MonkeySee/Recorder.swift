@@ -49,10 +49,15 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
     private var timer: DispatchSourceTimer?
     private var failure: Error?
 
+    /// After `prepare`, true when a window asked for in `including` wasn't
+    /// found, so it won't be in the clip.
+    private(set) var missedIncludedWindow = false
+
     /// Sets up the file and starts the stream. `rect` is in AppKit screen
-    /// coordinates. Frames are kept but not written until `begin()`.
-    /// `completion` runs on the main queue.
-    func prepare(rect: NSRect, completion: @escaping (Error?) -> Void) {
+    /// coordinates. monkeysee's own windows are left out, except those in
+    /// `including` (the keystroke overlay). Frames are kept but not written
+    /// until `begin()`. `completion` runs on the main queue.
+    func prepare(rect: NSRect, including: [CGWindowID] = [], completion: @escaping (Error?) -> Void) {
         guard let screen = Geometry.screen(containing: rect), let displayID = screen.displayID else {
             completion(RecorderError.offScreen)
             return
@@ -71,7 +76,7 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
             return
         }
 
-        SCShareableContent.getExcludingDesktopWindows(false, onScreenWindowsOnly: true) { [weak self] content, error in
+        SCShareableContent.getExcludingDesktopWindows(false, onScreenWindowsOnly: false) { [weak self] content, error in
             DispatchQueue.main.async {
                 guard let self else { return }
                 if let error {
@@ -83,10 +88,13 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
                     completion(RecorderError.noDisplay)
                     return
                 }
-                // Leave monkeysee's own windows (frame, sidebar, countdown) out of the clip.
+                // Leave monkeysee's own windows (frame, sidebar, countdown) out
+                // of the clip, but let the keystroke overlay in.
                 let me = ProcessInfo.processInfo.processIdentifier
                 let mine = content.applications.filter { $0.processID == me }
-                let filter = SCContentFilter(display: display, excludingApplications: mine, exceptingWindows: [])
+                let kept = content.windows.filter { including.contains($0.windowID) }
+                self.missedIncludedWindow = kept.count < Set(including).count
+                let filter = SCContentFilter(display: display, excludingApplications: mine, exceptingWindows: kept)
 
                 let config = SCStreamConfiguration()
                 config.sourceRect = sourceRect

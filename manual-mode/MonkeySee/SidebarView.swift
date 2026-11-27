@@ -19,6 +19,7 @@ struct SidebarView: View {
             targetSection
             sizeRow
             countdownRow
+            keystrokesRow
             Divider()
             Text("Features")
                 .font(.caption)
@@ -161,6 +162,12 @@ struct SidebarView: View {
         .disabled(busy)
     }
 
+    private var keystrokesRow: some View {
+        Toggle("Show keystrokes", isOn: $model.showKeystrokes)
+            .disabled(busy)
+            .help("Shortcuts and keys like Return or the arrows appear at the bottom of the clip, as in agent mode. Plain typing isn't shown.")
+    }
+
     // MARK: Features
 
     private var featureList: some View {
@@ -259,7 +266,9 @@ struct SidebarView: View {
                 permissionRow("Screen Recording is off.") { controller.requestScreenRecording() }
             }
             if !model.accessibilityAllowed {
-                permissionRow("Accessibility is off (for Target window).") { controller.requestAccessibility() }
+                permissionRow(model.showKeystrokes
+                              ? "Accessibility is off (for Target window and keystrokes)."
+                              : "Accessibility is off (for Target window).") { controller.requestAccessibility() }
             }
             if let saved = model.lastSaved {
                 HStack(spacing: 4) {

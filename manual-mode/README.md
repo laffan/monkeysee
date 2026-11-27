@@ -33,7 +33,9 @@ macOS asks for two:
   then quit and reopen it; macOS only applies this on relaunch.
 - **Accessibility** (Privacy & Security > Accessibility). Asked the first
   time you click Target window. Needed to move and resize other apps'
-  windows, and to let Esc cancel target mode.
+  windows, to let Esc cancel target mode, and to see the keys you press
+  for Show keystrokes. Without it a take still records, just with no
+  keystrokes, and the sidebar says so.
 
 The sidebar shows a warning with an Allow button while either is off.
 
@@ -66,6 +68,12 @@ add it again.
   the frame. The app you were using is brought forward first so its
   window looks active. The frame turns red while recording; press Stop in
   the sidebar. The frame can't be moved during a take.
+- **Keystrokes.** With Show keystrokes on (the default), the keys you
+  press appear in a dark pill near the bottom of the frame and end up in
+  the clip, drawn like agent mode's HUD: shortcuts (anything with ⌘, ⌃
+  or ⌥), keys such as ↩ ⇥ esc ⌫ and the arrows, and a modifier tapped on
+  its own, spelled out ("Shift", then "Shift × 2" and "× 3" for quick
+  repeats). Plain typing isn't shown. The pill only shows during a take.
 - **Trimming.** A window opens with the clip and AVKit's trim bar. Drag
   the yellow handles and press Trim to save the trimmed clip, or Cancel
   and then Save to keep the whole clip. Discard deletes it.
@@ -78,7 +86,8 @@ add it again.
 - H.264 mp4, constant 30 fps, at the screen's pixel scale: 2560 × 1600 on
   Retina, 1280 × 800 on a 1x screen. This matches agent mode's clips.
 - The cursor is recorded. monkeysee's own windows (frame, sidebar,
-  countdown) are left out of the capture even if they overlap the frame.
+  countdown) are left out of the capture even if they overlap the frame;
+  the keystroke pill is the one window of its own that's let in.
 - No audio.
 - A trimmed clip is re-encoded at the highest quality preset so the cut
   lands on the exact frame; an untrimmed clip is saved as recorded.
@@ -86,8 +95,8 @@ add it again.
   sidebar beside the frame, it's pinned to the screen's edge and may
   cover part of the frame; it still isn't in the clip.
 
-Projects, features, the countdown, the output folder and the frame's
-position are kept in the app's preferences.
+Projects, features, the countdown, Show keystrokes, the output folder
+and the frame's position are kept in the app's preferences.
 
 ## Code
 
@@ -103,6 +112,7 @@ MonkeySee/
   Recorder.swift                  ScreenCaptureKit stream to AVAssetWriter
   TrimWindowController.swift      AVPlayerView trimming and saving
   WindowTargeter.swift            target mode (Accessibility API)
+  KeystrokeOverlay.swift          the keystroke pill shown during a take
   Permissions.swift, Geometry.swift
   Assets.xcassets/AppIcon         the app icon, resized from ../app-icon.jpg
 ```

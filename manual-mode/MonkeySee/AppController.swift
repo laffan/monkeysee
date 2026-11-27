@@ -8,6 +8,7 @@ final class AppController {
 
     private let boundary = BoundaryController()
     private let targeter = WindowTargeter()
+    private let keystrokes = KeystrokeOverlay()
     private var sidebarPanel: SidebarPanel?
     private var recorder: Recorder?
     private var countdown: Countdown?
@@ -73,6 +74,7 @@ final class AppController {
 
     func shutDown() {
         targeter.end()
+        keystrokes.detach()
         countdown?.cancel()
         recorder?.cancel()
     }
@@ -155,12 +157,23 @@ final class AppController {
         self.countdown = countdown
         model.phase = .countingDown(model.countdownSeconds)
 
+        // The keystroke window has to be on screen before the stream is set
+        // up, so the recorder can let it in.
+        var including: [CGWindowID] = []
+        if model.showKeystrokes {
+            keystrokes.attach(to: rect)
+            including = [keystrokes.windowID]
+        }
+
         // The stream starts during the countdown; frames are written from "go".
-        recorder.prepare(rect: rect) { [weak self] error in
+        recorder.prepare(rect: rect, including: including) { [weak self] error in
             guard let self, self.recorder === recorder else { return }
             if let error {
                 self.abort("Couldn't start recording: \(error.localizedDescription)")
                 return
+            }
+            if recorder.missedIncludedWindow {
+                self.model.status = "Keystrokes won't be in this clip: macOS didn't list their window."
             }
             self.streamReady = true
             if self.countdownDone { self.beginRecording() }
@@ -184,11 +197,15 @@ final class AppController {
         recorder?.begin()
         model.phase = .recording(Date())
         boundary.setRecording(true)
+        if model.showKeystrokes, !keystrokes.startListening() {
+            model.status = "Keystrokes need Accessibility: turn on monkeysee under Privacy & Security > Accessibility."
+        }
     }
 
     func stopRecording() {
         guard case .recording = model.phase, let recorder else { return }
         model.phase = .finishing
+        keystrokes.detach()
         recorder.finish { [weak self] result in
             guard let self else { return }
             self.recorder = nil
@@ -220,6 +237,7 @@ final class AppController {
         countdown = nil
         recorder?.cancel()
         recorder = nil
+        keystrokes.detach()
         boundary.setRecording(false)
         boundary.isLocked = false
         endTake(status: message)
